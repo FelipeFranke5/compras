@@ -7,12 +7,15 @@ import dev.franke.felipe.compras.compras.api.model.Produto;
 import dev.franke.felipe.compras.compras.api.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ProdutoService {
+
+    public static final ProdutoMapper MAPPER = ProdutoMapper.INSTANCIA;
 
     private final ProdutoRepository produtoRepository;
 
@@ -30,10 +33,11 @@ public class ProdutoService {
 
     public Produto cadastraProduto(ProdutoINDTO requisicao) {
         requisicao.validaTudo();
-        Produto produto = ProdutoMapper.INSTANCIA.produtoINDTOParaProduto(requisicao);
+        Produto produto = MAPPER.produtoINDTOParaProduto(requisicao);
         return this.produtoRepository.save(produto);
     }
 
+    @Transactional
     public Produto alteraProduto(Produto produto, ProdutoINDTO requisicao) {
         requisicao.validaTudo();
         produto.setNome(requisicao.getNomeProduto());
@@ -41,6 +45,7 @@ public class ProdutoService {
         return this.produtoRepository.save(produto);
     }
 
+    @Transactional
     public void removeProduto(Produto produto) {
         this.produtoRepository.delete(produto);
     }
