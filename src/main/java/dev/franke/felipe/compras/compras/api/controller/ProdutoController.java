@@ -19,6 +19,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 @RestController
 @RequiredArgsConstructor
@@ -81,13 +82,14 @@ public class ProdutoController {
 
     private List<Link> linksSemId() {
         var requisicaoExemplo = this.obtemRequisicaoExemplo();
+        Long id = ThreadLocalRandom.current().nextLong(1L, 3000L);
         return List.of(
                 linkTo(methodOn(ProdutoController.class).listaProdutos()).withSelfRel(),
                 linkTo(methodOn(ProdutoController.class).listaOrdenada()).withRel("lista-ordenada"),
                 linkTo(methodOn(ProdutoController.class).produtoPorId(1L)).withRel("produto-por-id"),
                 linkTo(methodOn(ProdutoController.class).salvaProduto(requisicaoExemplo)).withRel("salva-produto"),
-                linkTo(methodOn(ProdutoController.class).alteraProduto(1L, requisicaoExemplo)).withRel("altera-produto"),
-                linkTo(methodOn(ProdutoController.class).deletaProduto(1L)).withRel("deleta-produto")
+                linkTo(methodOn(ProdutoController.class).alteraProduto(id, requisicaoExemplo)).withRel("altera-produto"),
+                linkTo(methodOn(ProdutoController.class).deletaProduto(id)).withRel("deleta-produto")
         );
     }
 
