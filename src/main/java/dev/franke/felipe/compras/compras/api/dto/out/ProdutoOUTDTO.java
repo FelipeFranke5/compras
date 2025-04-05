@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-@Relation(collectionRelation = "produtos")
+@Relation(collectionRelation = "produtos", itemRelation = "produto")
 public class ProdutoOUTDTO {
 
     private Long idProduto;
