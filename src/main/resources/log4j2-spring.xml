@@ -6,7 +6,7 @@
             <PatternLayout pattern="%d{ISO8601} - %-5p [%c{1.}] [%t]: %m %throwable %n"/>
         </Console>
         <RollingFile name="FILE" filePattern="log/app.%d{yyyy-MM-dd}.log.gz">
-            <JsonTemplateLayout eventTemplateUri="classpath:MyLayout.json"/>
+            <JsonTemplateLayout eventTemplateUri="classpath:MyLayout.json"/>git ad
             <DirectWriteRolloverStrategy>
                 <Delete basePath="log"> <!--2-->
                     <IfFileName regex="app\.\d{4}-\d{2}-\d{2}\.log\.gz"/>
