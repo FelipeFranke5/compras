@@ -49,9 +49,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-<<<<<<< HEAD
-
-=======
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -71,7 +68,6 @@
 			<artifactId>log4j-layout-template-json</artifactId>
 			<scope>runtime</scope>
 		</dependency>
->>>>>>> 45e02e3 (feat: inclui log estruturado)
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
