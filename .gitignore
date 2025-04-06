@@ -3,10 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-<<<<<<< HEAD
-=======
 log/
->>>>>>> 45e02e3 (feat: inclui log estruturado)
+Dockerfile
 
 ### STS ###
 .apt_generated
