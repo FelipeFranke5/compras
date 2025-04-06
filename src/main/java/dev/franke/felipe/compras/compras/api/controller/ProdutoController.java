@@ -6,6 +6,8 @@ import dev.franke.felipe.compras.compras.api.mapper.ProdutoMapper;
 import dev.franke.felipe.compras.compras.api.model.Produto;
 import dev.franke.felipe.compras.compras.api.service.ProdutoService;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -26,23 +28,28 @@ import java.util.Objects;
 public class ProdutoController {
 
     public static final ProdutoMapper MAPPER = ProdutoMapper.INSTANCIA;
+    public static final Logger LOGGER = LogManager.getLogger();
 
     private final ProdutoService produtoService;
-    private final EntityLinks entityLinks;
 
     @GetMapping("/lista_padrao")
     public ResponseEntity<CollectionModel<ProdutoOUTDTO>> listaProdutos() {
+        LOGGER.info("Requisicao para listagem padrao recebida");
         return this.obtemLista(this.produtoService.listaTodosProdutos());
     }
 
     @GetMapping("/lista_ordenada")
     public ResponseEntity<CollectionModel<ProdutoOUTDTO>> listaOrdenada() {
+        LOGGER.info("Requisicao para listagem ordenada recebida");
         return this.obtemLista(this.produtoService.listaTodosProdutosOrdenada());
     }
 
     @GetMapping("{id}")
     public ResponseEntity<EntityModel<ProdutoOUTDTO>> produtoPorId(@PathVariable Long id) {
+        LOGGER.info("Requisicao para pesquisar produto pelo ID {} recebida", id);
+        LOGGER.info("Buscando um produto com o ID {}", id);
         var produto = this.produtoService.produtoPorId(id);
+        LOGGER.info("Produto com id {} resgatado", id);
         var modelo = EntityModel.of(MAPPER.produtoParaProdutoOUTDTO(produto));
         modelo.add(this.linksComId(Objects.requireNonNull(modelo.getContent()).getIdProduto()));
         return ResponseEntity.ok(modelo);
@@ -50,7 +57,10 @@ public class ProdutoController {
 
     @PostMapping("/cadastro")
     public ResponseEntity<EntityModel<ProdutoOUTDTO>> salvaProduto(@RequestBody ProdutoINDTO requisicao) {
+        LOGGER.info("Requisicao para cadastrar produto recebida");
+        LOGGER.info("Tentando armazenar o produto");
         var produtoSalvo = this.produtoService.cadastraProduto(requisicao);
+        LOGGER.info("Produto armazenado com sucesso");
         var modelo = EntityModel.of(MAPPER.produtoParaProdutoOUTDTO(produtoSalvo));
         modelo.add(this.linksComId(Objects.requireNonNull(modelo.getContent()).getIdProduto()));
         return ResponseEntity.status(HttpStatus.CREATED).body(modelo);
@@ -58,8 +68,11 @@ public class ProdutoController {
 
     @PutMapping("/alteracao/{id}")
     public ResponseEntity<EntityModel<ProdutoOUTDTO>> alteraProduto(@PathVariable Long id, @RequestBody ProdutoINDTO requisicao) {
+        LOGGER.info("Requisicao para alterar o produto com o id {} recebida", id);
         var produto = this.produtoService.produtoPorId(id);
+        LOGGER.info("Produto com o id {} resgatado. Iniciando alteracoes", id);
         var produtoSalvo = this.produtoService.alteraProduto(produto, requisicao);
+        LOGGER.info("Alteracoes realizadas com sucesso");
         var modelo = EntityModel.of(MAPPER.produtoParaProdutoOUTDTO(produtoSalvo));
         modelo.add(this.linksComId(Objects.requireNonNull(modelo.getContent()).getIdProduto()));
         return ResponseEntity.ok(modelo);
@@ -67,8 +80,13 @@ public class ProdutoController {
 
     @DeleteMapping("/delecao/{id}")
     public ResponseEntity<Void> deletaProduto(@PathVariable Long id) {
+        LOGGER.info("Requisicao para deletar produto com id {} recebida", id);
+        LOGGER.info("Tentando obter o produto utilizando id {}", id);
         var produto = this.produtoService.produtoPorId(id);
+        LOGGER.info("Produto com id {} resgatado com sucesso", id);
+        LOGGER.info("Iniciando delecao do produto com id {}", id);
         this.produtoService.removeProduto(produto);
+        LOGGER.info("Delecao do produto com id {} efetuada com sucesso", id);
         return ResponseEntity.noContent().build();
     }
 
