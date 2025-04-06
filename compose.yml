@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  api_compras:
+    image: api
+    build:
+      context: .
+    container_name: api_compras
+    ports:
+      - 8081:8081
+    networks:
+      - api_net
+
+networks:
+  api_net:
+    driver: bridge
