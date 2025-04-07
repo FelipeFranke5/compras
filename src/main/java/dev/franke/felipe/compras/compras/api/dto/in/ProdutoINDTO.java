@@ -27,7 +27,7 @@ public class ProdutoINDTO {
         if (this.getPrecoProduto() == null) {
             throw new ValorProdutoObrigatorioException(null);
         }
-        int valor = this.getPrecoProduto().intValueExact();
+        int valor = this.getPrecoProduto().intValue();
         if (valor <= 0 || valor > 50000) {
             throw new ValorProdutoInvalidoException(null);
         }
