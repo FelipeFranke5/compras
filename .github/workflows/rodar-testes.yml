@@ -1,0 +1,16 @@
+name: Executar testes
+run-name: ${{ github.actor }} está executando os testes da aplicação
+on: [push]
+jobs:
+  rodar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          check-latest: false
+          cache: 'maven'
+      - name: Executar
+        run: mvn clean test
