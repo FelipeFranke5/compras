@@ -1,8 +1,0 @@
-spring:
-  application:
-    name: compras
-
-server:
-  port: 8081
-  error:
-    include-message: always
