@@ -38,4 +38,8 @@ public class Produto {
     @UpdateTimestamp
     private LocalDateTime dataModificacao;
 
+    public Produto(String nome, BigDecimal preco) {
+        this.setNome(nome);
+        this.setPreco(preco);
+    }
 }
