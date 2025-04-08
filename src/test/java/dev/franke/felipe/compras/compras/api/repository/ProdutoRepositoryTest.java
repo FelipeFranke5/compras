@@ -57,4 +57,19 @@ public class ProdutoRepositoryTest {
         assertEquals(2, listaProdutos.size());
     }
 
+    @Test
+    @DisplayName("Teste - Metodo findAllByOrderByDataCriacaoDesc()")
+    void testeDadoListaProdutos_QuandoFindAllByOrderByDataCriacaoDesc_DeveRetornarListaOrdenada() {
+        var produto1 = this.novoProduto1();
+        var produto2 = this.novoProduto2();
+        var produtoSalvo1 = this.produtoRepository.save(produto1);
+        var produtoSalvo2 = this.produtoRepository.save(produto2);
+        var listaProdutos = this.produtoRepository.findAllByOrderByDataCriacaoDesc();
+        assertNotNull(listaProdutos);
+        assertFalse(listaProdutos.isEmpty());
+        assertEquals(2, listaProdutos.size());
+        assertEquals(produtoSalvo2, listaProdutos.get(0));
+        assertEquals(produtoSalvo1, listaProdutos.get(1));
+    }
+
 }
