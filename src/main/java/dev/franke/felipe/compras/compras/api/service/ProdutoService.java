@@ -2,6 +2,7 @@ package dev.franke.felipe.compras.compras.api.service;
 
 import dev.franke.felipe.compras.compras.api.dto.in.ProdutoINDTO;
 import dev.franke.felipe.compras.compras.api.exception.ListaProdutosInvalidaException;
+import dev.franke.felipe.compras.compras.api.exception.NomeProdutoJaCadastradoException;
 import dev.franke.felipe.compras.compras.api.exception.ProdutoNaoEncontradoException;
 import dev.franke.felipe.compras.compras.api.mapper.ProdutoMapper;
 import dev.franke.felipe.compras.compras.api.model.Produto;
@@ -38,8 +39,14 @@ public class ProdutoService {
                 .orElseThrow(() -> new ProdutoNaoEncontradoException(id.toString()));
     }
 
+    public Produto produtoPorNome(String nome) {
+        return this.produtoRepository.findByNome(nome)
+                .orElseThrow(() -> new ProdutoNaoEncontradoException(nome));
+    }
+
     public Produto cadastraProduto(ProdutoINDTO requisicao) {
         requisicao.validaTudo();
+        this.validaNomeProdutoJaExiste(requisicao.getNomeProduto());
         Produto produto = MAPPER.produtoINDTOParaProduto(requisicao);
         var preco = produto.getPreco().round(new MathContext(produto.getPreco().intValue(), RoundingMode.CEILING));
         produto.setPreco(preco);
@@ -47,10 +54,7 @@ public class ProdutoService {
     }
 
     public ResultadoSomaProdutos calculaTotalProdutos(List<Object> ids) {
-        if (ids == null || ids.isEmpty()) {
-            throw new ListaProdutosInvalidaException(null);
-        }
-
+        this.validaListaIdsEstaVazia(ids);
         var total = new AtomicInteger();
         var idsConsiderados = new ArrayList<Long>();
         var idsDesconsiderados = new ArrayList<>();
@@ -92,6 +96,7 @@ public class ProdutoService {
     @Transactional
     public Produto alteraProduto(Produto produto, ProdutoINDTO requisicao) {
         requisicao.validaTudo();
+        this.validaNomeProdutoJaExiste(requisicao.getNomeProduto());
         produto.setNome(requisicao.getNomeProduto());
         produto.setPreco(
                 requisicao.getPrecoProduto().round(
@@ -104,6 +109,14 @@ public class ProdutoService {
     @Transactional
     public void removeProduto(Produto produto) {
         this.produtoRepository.delete(produto);
+    }
+
+    private void validaListaIdsEstaVazia(List<Object> ids) {
+        if (ids == null || ids.isEmpty()) throw new ListaProdutosInvalidaException(null);
+    }
+
+    private void validaNomeProdutoJaExiste(String nome) {
+        if (this.produtoRepository.existsByNome(nome)) throw new NomeProdutoJaCadastradoException(null);
     }
 
 }
