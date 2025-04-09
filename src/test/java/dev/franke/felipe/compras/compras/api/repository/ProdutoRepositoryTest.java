@@ -59,7 +59,7 @@ public class ProdutoRepositoryTest {
 
     @Test
     @DisplayName("Teste - Metodo findAllByOrderByDataCriacaoDesc()")
-    void testeDadoListaProdutos_QuandoFindAllByOrderByDataCriacaoDesc_DeveRetornarListaOrdenada() {
+    void testeDadoListaProdutos_QuandoFindAllByOrderByDataCriacaoDescChamado_DeveRetornarListaOrdenada() {
         var produto1 = this.novoProduto1();
         var produto2 = this.novoProduto2();
         var produtoSalvo1 = this.produtoRepository.save(produto1);
@@ -70,6 +70,35 @@ public class ProdutoRepositoryTest {
         assertEquals(2, listaProdutos.size());
         assertEquals(produtoSalvo2, listaProdutos.get(0));
         assertEquals(produtoSalvo1, listaProdutos.get(1));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo findById()")
+    void testeDadoIdValido_QuandoFindByIdChamado_DeveRetornarProduto() {
+        var produto1 = this.novoProduto1();
+        var produto2 = this.novoProduto2();
+        var produtoSalvo1 = this.produtoRepository.save(produto1);
+        var produtoSalvo2 = this.produtoRepository.save(produto2);
+        var produtoEncontrado1 = this.produtoRepository.findById(produtoSalvo1.getId());
+        var produtoEncontrado2 = this.produtoRepository.findById(produtoSalvo2.getId());
+        assertTrue(produtoEncontrado1.isPresent());
+        assertTrue(produtoEncontrado2.isPresent());
+        assertEquals(produtoEncontrado1.get().getId(), produtoSalvo1.getId());
+        assertEquals(produtoEncontrado2.get().getId(), produtoSalvo2.getId());
+        assertEquals(produtoEncontrado1.get(), produtoSalvo1);
+        assertEquals(produtoEncontrado2.get(), produtoSalvo2);
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo save() para update")
+    void testeDadoProduto_QuandoSaveChamadoEmUpdate_DeveAlterarDados() {
+        var produto = this.novoProduto1();
+        var produtoSalvo = this.produtoRepository.save(produto);
+        produtoSalvo.setNome("Outro Produto");
+        var produtoAtualizado = this.produtoRepository.save(produtoSalvo);
+        assertNotNull(produtoAtualizado);
+        assertEquals(produtoAtualizado.getDataCriacao(), produtoSalvo.getDataCriacao());
+        assertEquals("Outro Produto", produtoAtualizado.getNome());
     }
 
 }
