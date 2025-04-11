@@ -3,9 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const h2 = document.querySelector('h2');
 
   form.addEventListener('submit', async function(event) {
-    let msgElemento = document.getElementById('msgErroDiv')
+    let msgElemento = document.getElementById('msgErroDiv');
     if (msgElemento) {
-      msgElemento.remove()
+      msgElemento.remove();
     }
 
     event.preventDefault();
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         precoProduto: document.getElementById('precoProduto').value
       };
 
-      let url = urlBase() + "/api/v1/produto/cadastro"
+      let url = urlBase() + "/api/v1/produto/cadastro";
       const resposta = await fetch(url, {
         method: 'POST',
         headers: {
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (resposta.status === 201) {
         alert('Produto cadastrado com sucesso!');
-        location.href = "cadastro_produto.html"
+        location.href = "cadastro_produto.html";
       } else {
         const dadosErro = await resposta.json();
         let erro = document.querySelector('.message');
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!msgElemento) {
         msgElemento = document.createElement('div');
         msgElemento.className = 'msg';
-        msgElemento.id = 'msgErroDiv'
+        msgElemento.id = 'msgErroDiv';
         form.parentNode.insertBefore(msgElemento, form);
       }
       msgElemento.textContent = 'O servidor não está disponível';
