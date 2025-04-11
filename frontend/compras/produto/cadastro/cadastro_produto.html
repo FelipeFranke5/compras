@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro de Produtos</title>
+  <script src="cadastro_produto.js"></script>
+  <script src="cadastro_produto_env.js"></script>
+  <link rel="stylesheet" href="cadastro_produto.css">
+</head>
+<body>
+
+  <h2>Cadastre um novo produto:</h2>
+
+  <hr>
+
+  <h3>Regras:</h3>
+  <h4>Nome do Produto:</h4>
+  <ul>
+    <li>Campo obrigatório</li>
+    <li>Deve ser único</li>
+    <li>Não pode estar em branco</li>
+    <li>Deve conter no mínimo 5 caracteres</li>
+    <li>Deve conter no máximo 30 caracteres</li>
+  </ul>
+  <h4>Preço do Produto:</h4>
+  <ul>
+    <li>Campo obrigatório</li>
+    <li>O valor deve ser enviado em centavos</li>
+    <li>Não pode ser zero (0)</li>
+    <li>Não pode ser negativo</li>
+    <li>Não pode ser maior do que 50000 centavos (R$ 500)</li>
+  </ul>
+
+  <form method="post">
+    <label for="nomeProduto">Nome do Produto:</label>
+    <input type="text" name="nomeProduto" id="nomeProduto" required>
+    <label for="precoProduto">Preço do Produto em centavos:</label>
+    <input type="number" name="precoProduto" id="precoProduto" required>
+    <input type="submit" id="botaoCadastrar" value="Cadastrar">
+  </form>
+
+</body>
+</html>
