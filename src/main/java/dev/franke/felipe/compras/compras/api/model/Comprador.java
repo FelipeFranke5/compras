@@ -39,6 +39,10 @@ public class Comprador {
     @CreationTimestamp
     private LocalDateTime dataCriacao;
 
+    public Comprador(String nome) {
+        this.nome = nome;
+    }
+
     public Comprador(String nome, BigDecimal saldoDebito, BigDecimal saldoVale) {
         this.nome = nome;
         this.saldoDebito = saldoDebito;
