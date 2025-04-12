@@ -39,6 +39,12 @@ public class Comprador {
     @CreationTimestamp
     private LocalDateTime dataCriacao;
 
+    public Comprador(String nome, BigDecimal saldoDebito, BigDecimal saldoVale) {
+        this.nome = nome;
+        this.saldoDebito = saldoDebito;
+        this.saldoValeAlimentacao = saldoVale;
+    }
+
     @PrePersist
     @PreUpdate
     public void defineSaldo() {
