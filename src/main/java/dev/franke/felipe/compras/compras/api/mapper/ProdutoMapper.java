@@ -33,5 +33,4 @@ public interface ProdutoMapper {
     @Mapping(source = "criadoEm", target = "dataCriacao")
     @Mapping(source = "modificadoEm", target = "dataModificacao")
     Produto produtoOUTDTOParaProduto(ProdutoOUTDTO produtoOUTDTO);
-
 }
