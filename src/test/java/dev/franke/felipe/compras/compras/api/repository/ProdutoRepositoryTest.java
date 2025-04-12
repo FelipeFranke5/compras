@@ -1,20 +1,19 @@
 package dev.franke.felipe.compras.compras.api.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import dev.franke.felipe.compras.compras.api.model.Produto;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 public class ProdutoRepositoryTest {
@@ -170,5 +169,4 @@ public class ProdutoRepositoryTest {
         assertNotNull(produtos);
         assertTrue(produtos.isEmpty());
     }
-
 }

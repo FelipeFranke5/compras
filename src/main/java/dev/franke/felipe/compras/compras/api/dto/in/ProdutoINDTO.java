@@ -4,9 +4,8 @@ import dev.franke.felipe.compras.compras.api.exception.NomeProdutoObrigatorioExc
 import dev.franke.felipe.compras.compras.api.exception.TamanhoProdutoInvalidoException;
 import dev.franke.felipe.compras.compras.api.exception.ValorProdutoInvalidoException;
 import dev.franke.felipe.compras.compras.api.exception.ValorProdutoObrigatorioException;
-import lombok.Data;
-
 import java.math.BigDecimal;
+import lombok.Data;
 
 @Data
 public class ProdutoINDTO {
@@ -37,5 +36,4 @@ public class ProdutoINDTO {
         this.validaNome();
         this.validaPreco();
     }
-
 }

@@ -1,10 +1,9 @@
 package dev.franke.felipe.compras.compras.api.dto.out;
 
-import lombok.Data;
-import org.springframework.hateoas.server.core.Relation;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.Data;
+import org.springframework.hateoas.server.core.Relation;
 
 @Data
 @Relation(collectionRelation = "produtos")
@@ -15,5 +14,4 @@ public class ProdutoOUTDTO {
     private BigDecimal precoProduto;
     private LocalDateTime criadoEm;
     private LocalDateTime modificadoEm;
-
 }
