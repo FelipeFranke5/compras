@@ -1,14 +1,13 @@
 package dev.franke.felipe.compras.compras.api.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "comprador")
@@ -39,6 +38,10 @@ public class Comprador {
     @CreationTimestamp
     private LocalDateTime dataCriacao;
 
+    public Comprador(String nome) {
+        this.nome = nome;
+    }
+
     public Comprador(String nome, BigDecimal saldoDebito, BigDecimal saldoVale) {
         this.nome = nome;
         this.saldoDebito = saldoDebito;
@@ -48,7 +51,8 @@ public class Comprador {
     @PrePersist
     @PreUpdate
     public void defineSaldo() {
-        var saldo = new BigDecimal(this.getSaldoDebito().intValue() + this.getSaldoValeAlimentacao().intValue());
+        var saldo = new BigDecimal(this.getSaldoDebito().intValue()
+                + this.getSaldoValeAlimentacao().intValue());
         this.setSaldoTotal(saldo);
     }
 }
