@@ -75,6 +75,8 @@ Atualmente, há testes cobrindo:
 - **Docker;**
 - **Terminal Linux**, **Git Bash** ou alguma forma de executar comandos **Linux.**
 
+---
+
 ### Passos
 
 1. Clone o repositório:
@@ -95,9 +97,13 @@ Atualmente, há testes cobrindo:
 
 A aplicação estará disponível em: http://localhost:8081
 
+---
+
 ## Frontend
 
 Um frontend simples está em desenvolvimento utilizando HTML, CSS e JavaScript, para facilitar a interação com a API REST. É possível acessá-lo na pasta **frontend**.
+
+---
 
 ## Considerações
 
