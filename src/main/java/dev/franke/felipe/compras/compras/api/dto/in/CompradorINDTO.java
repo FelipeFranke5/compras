@@ -18,8 +18,7 @@ public class CompradorINDTO {
         }
     }
 
-    private void validaTudo() {
+    public void validaTudo() {
         this.validaNome();
     }
-
 }
