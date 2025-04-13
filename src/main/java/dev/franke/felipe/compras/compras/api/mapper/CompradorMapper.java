@@ -12,8 +12,10 @@ public interface CompradorMapper {
     CompradorMapper INSTANCIA = Mappers.getMapper(CompradorMapper.class);
 
     CompradorINDTO compradorParaCompradorINDTO(Comprador comprador);
-    Comprador compradorINDTOParaComprador(CompradorINDTO compradorINDTO);
-    CompradorOUTDTO compradorParaCompradorOUTDTO(Comprador comprador);
-    Comprador compradorOUTDTOParaComprador(CompradorOUTDTO compradorOUTDTO);
 
+    Comprador compradorINDTOParaComprador(CompradorINDTO compradorINDTO);
+
+    CompradorOUTDTO compradorParaCompradorOUTDTO(Comprador comprador);
+
+    Comprador compradorOUTDTOParaComprador(CompradorOUTDTO compradorOUTDTO);
 }
