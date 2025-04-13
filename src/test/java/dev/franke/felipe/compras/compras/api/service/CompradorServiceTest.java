@@ -5,10 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import dev.franke.felipe.compras.compras.api.dto.in.CompradorINDTO;
 import dev.franke.felipe.compras.compras.api.exception.CompradorNaoEncontradoException;
 import dev.franke.felipe.compras.compras.api.exception.IdCompradorInvalidoException;
+import dev.franke.felipe.compras.compras.api.exception.NomeCompradorObrigatorioException;
+import dev.franke.felipe.compras.compras.api.exception.TamanhoNomeCompradorInvalidoException;
 import dev.franke.felipe.compras.compras.api.mapper.CompradorMapper;
 import dev.franke.felipe.compras.compras.api.model.Comprador;
 import dev.franke.felipe.compras.compras.api.repository.CompradorRepository;
@@ -146,5 +152,55 @@ class CompradorServiceTest {
     void testeQuandoIdInvalido_PorId_LancaIdCompradorInvalidoException() {
         var id = "invalido";
         assertThrowsExactly(IdCompradorInvalidoException.class, () -> service.porId(id));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo cadastra - Cenario Feliz - Request valida")
+    void testeQuandoRequestValida_Cadastra_RetornaComprador() {
+        var comprador = new Comprador("Felipe");
+        var compradorINDTO = new CompradorINDTO();
+        compradorINDTO.setNome(comprador.getNome());
+        when(repository.save(comprador)).thenReturn(comprador);
+        var resultado = service.cadastra(compradorINDTO);
+        validaNuloOptionalComprador(resultado);
+        verify(repository).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo cadastra - Cenario Triste - Nome nulo")
+    void testeQuandoNomeNulo_Cadastra_LancaNomeCompradorObrigatorioException() {
+        var compradorINDTO = new CompradorINDTO();
+        assertThrowsExactly(NomeCompradorObrigatorioException.class, () -> service.cadastra(compradorINDTO));
+        verify(repository, never()).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo cadastra - Cenario Triste - Nome vazio")
+    void testeQuandoNomeVazio_Cadastra_LancaNomeCompradorObrigatorioException() {
+        var compradorINDTO = new CompradorINDTO();
+        compradorINDTO.setNome("");
+        assertThrowsExactly(NomeCompradorObrigatorioException.class, () -> service.cadastra(compradorINDTO));
+        verify(repository, never()).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo cadastra - Cenario Triste - Nome com menos de 5 caracteres")
+    void testeQuandoNomeContem3Caracteres_Cadastra_LancaTamanhoNomeCompradorInvalidoException() {
+        var compradorINDTO = new CompradorINDTO();
+        compradorINDTO.setNome("abc");
+        assertThrowsExactly(TamanhoNomeCompradorInvalidoException.class, () -> service.cadastra(compradorINDTO));
+        verify(repository, never()).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo cadastra - Cenario Triste - Nome com mais de 30 caracteres")
+    void testeQuandoNomeContem31Caracteres_Cadastra_LancaTamanhoNomeCompradorInvalidoException() {
+        var compradorINDTO = new CompradorINDTO();
+        var inicioString = "abc";
+        var stringInvalida =
+                inicioString.repeat((31 / inicioString.length()) + 1).substring(0, 31);
+        compradorINDTO.setNome(stringInvalida);
+        assertThrowsExactly(TamanhoNomeCompradorInvalidoException.class, () -> service.cadastra(compradorINDTO));
+        verify(repository, never()).save(any(Comprador.class));
     }
 }
