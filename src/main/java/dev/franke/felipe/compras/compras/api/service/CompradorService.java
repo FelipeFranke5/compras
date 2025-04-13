@@ -1,4 +1,4 @@
-package dev.franke.felipe.compras.compras.api.service.lista_produtos;
+package dev.franke.felipe.compras.compras.api.service;
 
 import dev.franke.felipe.compras.compras.api.dto.in.CompradorINDTO;
 import dev.franke.felipe.compras.compras.api.exception.CompradorNaoEncontradoException;
