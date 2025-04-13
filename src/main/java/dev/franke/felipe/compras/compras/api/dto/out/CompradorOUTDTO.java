@@ -17,5 +17,4 @@ public class CompradorOUTDTO {
     private BigDecimal saldoValeAlimentacao;
     private Integer totalCompras;
     private LocalDateTime dataCriacao;
-
 }
