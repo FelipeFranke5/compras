@@ -1,7 +1,9 @@
 package dev.franke.felipe.compras.compras.api.service;
 
 import dev.franke.felipe.compras.compras.api.dto.in.CompradorINDTO;
+import dev.franke.felipe.compras.compras.api.exception.CompradorINObrigatorioException;
 import dev.franke.felipe.compras.compras.api.exception.CompradorNaoEncontradoException;
+import dev.franke.felipe.compras.compras.api.exception.CompradorObrigatorioException;
 import dev.franke.felipe.compras.compras.api.exception.IdCompradorInvalidoException;
 import dev.franke.felipe.compras.compras.api.exception.ValorCompraInvalidoException;
 import dev.franke.felipe.compras.compras.api.mapper.CompradorMapper;
@@ -51,6 +53,8 @@ public class CompradorService {
     }
 
     public Comprador atualizaNome(Comprador comprador, CompradorINDTO requisicao) {
+        if (comprador == null) throw new CompradorObrigatorioException("O comprador e obrigatorio");
+        if (requisicao == null) throw new CompradorINObrigatorioException("A requisicao e obrigatoria");
         requisicao.validaTudo();
         comprador.setNome(requisicao.getNome());
         return compradorRepository.save(comprador);
