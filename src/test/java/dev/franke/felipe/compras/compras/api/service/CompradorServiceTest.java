@@ -1,10 +1,6 @@
 package dev.franke.felipe.compras.compras.api.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -41,7 +37,7 @@ class CompradorServiceTest {
 
     void validaNuloOptionalComprador(Object obj) {
         assertNotNull(obj);
-        assertTrue(obj instanceof Comprador);
+        assertInstanceOf(Comprador.class, obj);
         var comprador = (Comprador) obj;
         assertNotNull(comprador.getNome());
         assertNotNull(comprador.getSaldoDebito());
@@ -55,7 +51,7 @@ class CompradorServiceTest {
 
     void validaNuloListas(Object obj) {
         assertNotNull(obj);
-        assertTrue(obj instanceof List);
+        assertInstanceOf(List.class, obj);
     }
 
     void validaNuloListasVazias(Object obj) {
@@ -221,20 +217,17 @@ class CompradorServiceTest {
     @DisplayName("Teste - Metodo atualizaNome - Cenario Triste - CompradorINDTO nulo")
     void testeQuandoCompradorINDTONulo_AtualizaNomeChamado_LancaCompradorINObrigatorioException() {
         var compradorAnterior = new Comprador("Felipe");
-        CompradorINDTO requisicaoMudanca = null;
         assertThrowsExactly(
                 CompradorINObrigatorioException.class,
-                () -> service.atualizaNome(compradorAnterior, requisicaoMudanca));
+                () -> service.atualizaNome(compradorAnterior, null));
         verify(repository, never()).save(any(Comprador.class));
     }
 
     @Test
     @DisplayName("Teste - Metodo atualizaNome - Cenario Triste - Comprador nulo")
     void testeQuandoCompradorNulo_AtualizaNomeChamado_LancaCompradorObrigatorioException() {
-        Comprador compradorAnterior = null;
-        CompradorINDTO requisicaoMudanca = null;
         assertThrowsExactly(
-                CompradorObrigatorioException.class, () -> service.atualizaNome(compradorAnterior, requisicaoMudanca));
+                CompradorObrigatorioException.class, () -> service.atualizaNome(null, null));
         verify(repository, never()).save(any(Comprador.class));
     }
 
@@ -267,6 +260,21 @@ class CompradorServiceTest {
         var compradorAnterior = new Comprador("Felipe");
         var requisicaoMudanca = new CompradorINDTO();
         requisicaoMudanca.setNome("abc");
+        assertThrowsExactly(
+                TamanhoNomeCompradorInvalidoException.class,
+                () -> service.atualizaNome(compradorAnterior, requisicaoMudanca));
+        verify(repository, never()).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo atualizaNome - Cenario Triste - Nome com mais de 30 caracteres")
+    void testeQuandoNomeContem31Caracteres_AtualizaNomeChamado_LancaTamanhoNomeCompradorInvalidoException() {
+        var compradorAnterior = new Comprador("Felipe");
+        var requisicaoMudanca = new CompradorINDTO();
+        var inicioString = "abc";
+        var stringInvalida =
+                inicioString.repeat((31 / inicioString.length()) + 1).substring(0, 31);
+        requisicaoMudanca.setNome(stringInvalida);
         assertThrowsExactly(
                 TamanhoNomeCompradorInvalidoException.class,
                 () -> service.atualizaNome(compradorAnterior, requisicaoMudanca));
