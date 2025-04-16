@@ -7,12 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import dev.franke.felipe.compras.compras.api.dto.in.CompradorINDTO;
-import dev.franke.felipe.compras.compras.api.exception.CompradorINObrigatorioException;
-import dev.franke.felipe.compras.compras.api.exception.CompradorNaoEncontradoException;
-import dev.franke.felipe.compras.compras.api.exception.CompradorObrigatorioException;
-import dev.franke.felipe.compras.compras.api.exception.IdCompradorInvalidoException;
-import dev.franke.felipe.compras.compras.api.exception.NomeCompradorObrigatorioException;
-import dev.franke.felipe.compras.compras.api.exception.TamanhoNomeCompradorInvalidoException;
+import dev.franke.felipe.compras.compras.api.exception.*;
 import dev.franke.felipe.compras.compras.api.model.Comprador;
 import dev.franke.felipe.compras.compras.api.repository.CompradorRepository;
 import java.math.BigDecimal;
@@ -162,6 +157,13 @@ class CompradorServiceTest {
     }
 
     @Test
+    @DisplayName("Teste - Metodo cadastra - Cenario Triste - CompradorINDTO nulo")
+    void testeQuandoCompradorINDTONulo_CadastraChamado_LancaCompradorINObrigatorioException() {
+        assertThrowsExactly(CompradorINObrigatorioException.class, () -> service.cadastra(null));
+        verify(repository, never()).save(any(Comprador.class));
+    }
+
+    @Test
     @DisplayName("Teste - Metodo cadastra - Cenario Triste - Nome nulo")
     void testeQuandoNomeNulo_CadastraChamado_LancaNomeCompradorObrigatorioException() {
         var compradorINDTO = new CompradorINDTO();
@@ -217,17 +219,14 @@ class CompradorServiceTest {
     @DisplayName("Teste - Metodo atualizaNome - Cenario Triste - CompradorINDTO nulo")
     void testeQuandoCompradorINDTONulo_AtualizaNomeChamado_LancaCompradorINObrigatorioException() {
         var compradorAnterior = new Comprador("Felipe");
-        assertThrowsExactly(
-                CompradorINObrigatorioException.class,
-                () -> service.atualizaNome(compradorAnterior, null));
+        assertThrowsExactly(CompradorINObrigatorioException.class, () -> service.atualizaNome(compradorAnterior, null));
         verify(repository, never()).save(any(Comprador.class));
     }
 
     @Test
     @DisplayName("Teste - Metodo atualizaNome - Cenario Triste - Comprador nulo")
     void testeQuandoCompradorNulo_AtualizaNomeChamado_LancaCompradorObrigatorioException() {
-        assertThrowsExactly(
-                CompradorObrigatorioException.class, () -> service.atualizaNome(null, null));
+        assertThrowsExactly(CompradorObrigatorioException.class, () -> service.atualizaNome(null, null));
         verify(repository, never()).save(any(Comprador.class));
     }
 
@@ -279,5 +278,94 @@ class CompradorServiceTest {
                 TamanhoNomeCompradorInvalidoException.class,
                 () -> service.atualizaNome(compradorAnterior, requisicaoMudanca));
         verify(repository, never()).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo atualizaSaldoDebito - Cenario Feliz - Saldo valido")
+    void testeQuandoSaldoDebitoValido_AtualizaSaldoDebito_RetornaComprador() {
+        var comprador = new Comprador("Felipe");
+        var valor = new BigDecimal(100);
+        when(repository.save(any(Comprador.class))).thenReturn(comprador);
+        var resultado = service.atualizaSaldoDebito(comprador, valor);
+        assertEquals(valor.intValue(), resultado.getSaldoDebito().intValue());
+        verify(repository).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo atualizaSaldoDebito - Cenario Triste - Comprador nulo")
+    void testeQuandoCompradorNulo_AtualizaSaldoDebito_LancaCompradorObrigatorioException() {
+        var valor = new BigDecimal(100);
+        assertThrowsExactly(CompradorObrigatorioException.class, () -> service.atualizaSaldoDebito(null, valor));
+        verify(repository, never()).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo atualizaSaldoDebito - Cenario Triste - Valor nulo")
+    void testeQuandoValorNulo_AtualizaSaldoDebito_LancaValorProdutoObrigatorioException() {
+        var comprador = new Comprador("Felipe");
+        assertThrowsExactly(ValorProdutoObrigatorioException.class, () -> service.atualizaSaldoDebito(comprador, null));
+        verify(repository, never()).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo atualizaSaldoValeAlimentacao - Cenario Feliz - Saldo valido")
+    void testeQuandoSaldoDebitoValido_AtualizaSaldoValeAlimentacao_RetornaComprador() {
+        var comprador = new Comprador("Felipe");
+        var valor = new BigDecimal(100);
+        when(repository.save(any(Comprador.class))).thenReturn(comprador);
+        var resultado = service.atualizaSaldoValeAlimentacao(comprador, valor);
+        assertEquals(valor.intValue(), resultado.getSaldoValeAlimentacao().intValue());
+        verify(repository).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo atualizaSaldoValeAlimentacao - Cenario Triste - Comprador nulo")
+    void testeQuandoCompradorNulo_AtualizaSaldoValeAlimentacao_LancaCompradorObrigatorioException() {
+        var valor = new BigDecimal(100);
+        assertThrowsExactly(
+                CompradorObrigatorioException.class, () -> service.atualizaSaldoValeAlimentacao(null, valor));
+        verify(repository, never()).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo atualizaSaldoValeAlimentacao - Cenario Triste - Valor nulo")
+    void testeQuandoValorNulo_AtualizaSaldoValeAlimentacao_LancaValorProdutoObrigatorioException() {
+        var comprador = new Comprador("Felipe");
+        assertThrowsExactly(ValorProdutoObrigatorioException.class, () -> service.atualizaSaldoDebito(comprador, null));
+        verify(repository, never()).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo atualizaTotalCompras - Cenario Feliz - Total valido")
+    void testeQuandoTotalComprasValido_AtualizaTotalCompras_RetornaComprador() {
+        var comprador = new Comprador("Felipe");
+        var valor = 10;
+        when(repository.save(any(Comprador.class))).thenReturn(comprador);
+        var resultado = service.atualizaTotalCompras(comprador, valor);
+        assertEquals(valor, resultado.getTotalCompras());
+        verify(repository).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo atualizaTotalCompras - Cenario Triste - Comprador nulo")
+    void testeQuandoCompradorNulo_AtualizaTotalCompras_LancaCompradorObrigatorioException() {
+        var valor = 10;
+        assertThrowsExactly(CompradorObrigatorioException.class, () -> service.atualizaTotalCompras(null, valor));
+        verify(repository, never()).save(any(Comprador.class));
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo apaga - Cenario Feliz - Comprador encontrado")
+    void testeQuandoCompradorEncontrado_ApagaChamado_CompradorApagado() {
+        var comprador = new Comprador("Felipe");
+        service.apaga(comprador);
+        verify(repository).delete(comprador);
+    }
+
+    @Test
+    @DisplayName("Teste - Metodo apaga - Cenario Triste - Comprador nulo")
+    void testeQuandoCompradorNulo_ApagaChamado_LancaCompradorObrigatorioException() {
+        assertThrowsExactly(CompradorObrigatorioException.class, () -> service.apaga(null));
+        verify(repository, never()).delete(any(Comprador.class));
     }
 }
