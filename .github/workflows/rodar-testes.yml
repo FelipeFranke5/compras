@@ -1,6 +1,9 @@
-name: Executar testes
-run-name: ${{ github.actor }} está executando os testes da aplicação
-on: [push]
+name: Testar a aplicação
+run-name: ${{ github.actor }} - Testes da aplicação
+on:
+  push:
+    branches:
+      - main
 jobs:
   rodar:
     runs-on: ubuntu-latest
@@ -12,5 +15,5 @@ jobs:
           java-version: '17'
           check-latest: false
           cache: 'maven'
-      - name: Executar
+      - name: Executar os testes
         run: mvn clean test
