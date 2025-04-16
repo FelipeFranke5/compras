@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,34 +31,11 @@ class CompradorServiceTest {
     @InjectMocks
     private CompradorService service;
 
-    void validaNuloOptionalComprador(Object obj) {
-        assertNotNull(obj);
-        assertInstanceOf(Comprador.class, obj);
-        var comprador = (Comprador) obj;
-        assertNotNull(comprador.getNome());
-        assertNotNull(comprador.getSaldoDebito());
-        assertNotNull(comprador.getSaldoValeAlimentacao());
-        assertNotNull(comprador.getSaldoTotal());
-        assertEquals(
-                comprador.getSaldoTotal().intValue(),
-                comprador.getSaldoDebito().intValue()
-                        + comprador.getSaldoValeAlimentacao().intValue());
-    }
+    private ValidadorTestes validador;
 
-    void validaNuloListas(Object obj) {
-        assertNotNull(obj);
-        assertInstanceOf(List.class, obj);
-    }
-
-    void validaNuloListasVazias(Object obj) {
-        validaNuloListas(obj);
-        assertTrue(((List<?>) obj).isEmpty());
-    }
-
-    void validaNuloListasTamanho2(Object obj) {
-        validaNuloListas(obj);
-        assertFalse(((List<?>) obj).isEmpty());
-        assertEquals(2, ((List<?>) obj).size());
+    @BeforeEach
+    void setUp() {
+        validador = new ValidadorTestes();
     }
 
     @Test
@@ -65,7 +43,7 @@ class CompradorServiceTest {
     void testeQuandoNaoExistemRegistros_ListaCompradoresChamado_RetornaListaVazia() {
         when(repository.findAll()).thenReturn(List.of());
         var resultado = service.listaCompradores();
-        validaNuloListasVazias(resultado);
+        validador.validaNuloListasVazias(resultado);
     }
 
     @Test
@@ -75,7 +53,7 @@ class CompradorServiceTest {
         var comprador2 = new Comprador("Lucas");
         when(repository.findAll()).thenReturn(List.of(comprador1, comprador2));
         var resultado = service.listaCompradores();
-        validaNuloListasTamanho2(resultado);
+        validador.validaNuloListasTamanho2(resultado);
     }
 
     @Test
@@ -83,7 +61,7 @@ class CompradorServiceTest {
     void testeQuandoNaoExistemRegistros_ListaCompradoresAtivosChamado_RetornaListaVazia() {
         when(repository.compradoresAtivos()).thenReturn(List.of());
         var resultado = service.listaCompradoresAtivos();
-        validaNuloListasVazias(resultado);
+        validador.validaNuloListasVazias(resultado);
     }
 
     @Test
@@ -95,7 +73,7 @@ class CompradorServiceTest {
         comprador2.setTotalCompras(comprador2.getTotalCompras() + 1);
         when(repository.compradoresAtivos()).thenReturn(List.of(comprador1, comprador2));
         var resultado = service.listaCompradoresAtivos();
-        validaNuloListasTamanho2(resultado);
+        validador.validaNuloListasTamanho2(resultado);
     }
 
     @Test
@@ -103,7 +81,7 @@ class CompradorServiceTest {
     void testeQuandoNaoExistemRegistros_ListaCompradoresNegativadosChamado_RetornaListaVazia() {
         when(repository.compradoresNegativados()).thenReturn(List.of());
         var resultado = service.listaCompradoresNegativados();
-        validaNuloListasVazias(resultado);
+        validador.validaNuloListasVazias(resultado);
     }
 
     @Test
@@ -115,7 +93,7 @@ class CompradorServiceTest {
         comprador2.setSaldoDebito(new BigDecimal(-3000));
         when(repository.compradoresNegativados()).thenReturn(List.of(comprador1, comprador2));
         var resultado = service.listaCompradoresNegativados();
-        validaNuloListasTamanho2(resultado);
+        validador.validaNuloListasTamanho2(resultado);
     }
 
     @Test
@@ -125,7 +103,7 @@ class CompradorServiceTest {
         comprador1.setId(UUID.randomUUID());
         when(repository.findById(comprador1.getId())).thenReturn(Optional.of(comprador1));
         var resultado = service.porId(comprador1.getId().toString());
-        validaNuloOptionalComprador(resultado);
+        validador.validaNuloOptionalComprador(resultado);
     }
 
     @Test
@@ -152,7 +130,7 @@ class CompradorServiceTest {
         compradorINDTO.setNome(comprador.getNome());
         when(repository.save(comprador)).thenReturn(comprador);
         var resultado = service.cadastra(compradorINDTO);
-        validaNuloOptionalComprador(resultado);
+        validador.validaNuloOptionalComprador(resultado);
         verify(repository).save(any(Comprador.class));
     }
 
@@ -210,7 +188,7 @@ class CompradorServiceTest {
         requisicaoMudanca.setNome("Lucas");
         when(repository.save(any(Comprador.class))).thenReturn(compradorNovo);
         var resultado = service.atualizaNome(compradorAnterior, requisicaoMudanca);
-        validaNuloOptionalComprador(resultado);
+        validador.validaNuloOptionalComprador(resultado);
         assertEquals(compradorNovo.getNome(), resultado.getNome());
         verify(repository).save(any(Comprador.class));
     }
