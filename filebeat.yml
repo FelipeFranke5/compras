@@ -1,0 +1,24 @@
+filebeat.inputs:
+- type: filestream
+  enabled: true
+  paths:
+    - /logs/**/*.log
+  parsers:
+    - ndjson:
+        keys_under_root: true
+        overwrite_keys: true
+        add_error_key: true
+
+processors:
+  - timestamp:
+      field: "@timestamp"
+      layouts:
+        - "2006-01-02T15:04:05.000Z"
+      test:
+        - "2025-04-18T15:21:12.217Z"
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+
+setup.ilm.enabled: false
+setup.template.enabled: false
