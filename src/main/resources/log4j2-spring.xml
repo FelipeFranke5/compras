@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Configuration>
+<Configuration status="TRACE">
     <Appenders>
         <Console name="CONSOLE">
             <PatternLayout pattern="%d{ISO8601} - %-5p [%c{1.}] [%t]: %m %throwable %n"/>
         </Console>
-        <RollingFile name="FILE" filePattern="log/app.%d{yyyy-MM-dd}.log.gz">
-            <JsonTemplateLayout eventTemplateUri="classpath:MyLayout.json"/>
-            <DirectWriteRolloverStrategy>
-                <Delete basePath="log"> <!--2-->
-                    <IfFileName regex="app\.\d{4}-\d{2}-\d{2}\.log\.gz"/>
-                    <IfLastModified age="P15D"/>
-                </Delete>
-            </DirectWriteRolloverStrategy>
-            <TimeBasedTriggeringPolicy/>
+        <RollingFile name="FILE" filePattern="logs/mes_%d{MM-yyyy}/dia_%d{dd}.log" append="true">
+            <JsonTemplateLayout eventTemplateUri="classpath:MyLayout.json" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB" />
+                <CronTriggeringPolicy schedule="0 */5 * * * ?"/>
+            </Policies>
         </RollingFile>
     </Appenders>
     <Loggers>
         <Root level="INFO">
-            <AppenderRef ref="CONSOLE"/>
-            <AppenderRef ref="FILE"/>
+            <AppenderRef ref="CONSOLE" />
+            <AppenderRef ref="FILE" />
         </Root>
     </Loggers>
 </Configuration>
