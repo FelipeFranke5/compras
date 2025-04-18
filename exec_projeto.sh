@@ -9,4 +9,4 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Executando 'docker compose up -d'..."
-docker compose up -d
+docker compose up -d --build
