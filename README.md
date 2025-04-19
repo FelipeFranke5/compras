@@ -7,18 +7,19 @@
 ## Tecnologias e Ferramentas
 
 - **[Docker](https://www.docker.com/)** - O recomendado é utilizar a imagem Docker e o arquivo **compose.yml** disponibilizados na pasta raíz do projeto para executar a aplicação e para que as dependências externas carreguem de forma automática
-- **[Java](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)**
-- **[Spring Boot](https://start.spring.io/)**
-- **Maven**
+- **[Elasticsearch](https://www.elastic.co/elasticsearch)** - Mecanismo de busca e centralização distribuída de logs
+- **[Kibana](https://www.elastic.co/kibana)** - Gera os dashboards e relatórios
+- **[Filebeat](https://www.elastic.co/beats/filebeat/)** - Essencial para enviar os logs estruturados para processamento do Elasticsearch + Kibana
+- **[Java](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)** - Versão 17+
+- **[Spring Boot](https://start.spring.io/)** - Utilizando a versão 3.4.4
 - **[MapStruct](https://mapstruct.org/)** – Utilizado para mapeamento automático entre DTOs e entidades
 - **[JPA](https://spring.io/projects/spring-data-jpa)** - Para criação dos repositórios e manipulação do Banco de Dados H2. Será utilizado junto com o JDBC
 - **[Spring HATEOAS](https://spring.io/projects/spring-hateoas)** - Para que a API possa ser consumida em JSON e JSON+HAL
-- **Spring Boot Starter Web**
 - **[Log4j2](https://logging.apache.org/log4j/2.x/index.html)** - Para logging estruturado
-- **H2 Database** – Banco de dados em memória. Apesar de essencial para funcionamento do projeto, o objetivo não é focar na configuração do banco
-- **Lombok** – Redução de boilerplate
-- **Spring Boot Starter Test** – Testes com Mockito + JUnit
-- **Spotless Maven Plugin** – Formatação automática do código com:
+- **[H2 Database](https://www.h2database.com/html/main.html)** – Banco de dados em memória. Apesar de essencial para funcionamento do projeto, o objetivo não é focar na configuração do banco
+- **[Lombok](https://projectlombok.org/)** – Redução de boilerplate
+- **[Spring Boot Starter Test](https://docs.spring.io/spring-boot/docs/1.5.7.RELEASE/reference/html/boot-features-testing.html)** – Testes com Mockito + JUnit
+- **[Spotless Maven Plugin](https://github.com/diffplug/spotless)** – Formatação automática do código Java com:
   - `palantirJavaFormat`
   - `removeUnusedImports`
 
@@ -26,7 +27,7 @@
 
 ## Funcionalidades (Trabalho em progresso)
 
-- **Monitoramento e visualização facilitada de logs**: Acessando http://localhost:5601, é possível acompanhar os logs da aplicação e utilizar filtros para buscar por registros específicos. Por exemplo: Filtrar logs em que o nível (level) seja igual à "ERROR" ou "WARN". ![exemplo](https://github.com/user-attachments/assets/2ece6157-1563-4894-8ba4-a5e9a25ee909)
+- **Monitoramento e visualização facilitada de logs**: Acessando http://localhost:5601, é possível acompanhar os logs da aplicação e utilizar filtros para buscar por registros específicos. Por exemplo: Filtrar logs em que o nível (level) seja igual à "ERROR" ou "WARN". ![exemplo](https://github.com/user-attachments/assets/2ece6157-1563-4894-8ba4-a5e9a25ee909) - Já implementado com configurações simples
 - **Produto**: CRUD completo implementado
 - **Comprador**: Implementação parcial (controller ainda pendente, testes iniciados)
 - **Compra**: Ainda não implementado
