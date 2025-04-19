@@ -30,7 +30,7 @@ public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
 
-    private static BigDecimal decimal(int precoInt) {
+    public static BigDecimal decimal(int precoInt) {
         LOGGER.info("Criando BigDecimal com valor {}", precoInt);
         var precoDecimal = new BigDecimal(precoInt);
         LOGGER.info("BigDecimal criado");
@@ -38,7 +38,7 @@ public class ProdutoService {
         return precoDecimal;
     }
 
-    private static int getPrecoInt(String precoString) {
+    public static int getPrecoInt(String precoString) {
         int precoInt;
         LOGGER.info("Realizando parsing do valor informado");
         try {
@@ -52,48 +52,55 @@ public class ProdutoService {
     }
 
     public List<Produto> listaTodosProdutos() {
+        LOGGER.info("Iniciando busca de todos os produtos");
+        LOGGER.info("Busca ordenada: {}", false);
         return this.produtoRepository.findAll();
     }
 
     public List<Produto> listaTodosProdutosOrdenada() {
+        LOGGER.info("Iniciando busca de todos os produtos");
+        LOGGER.info("Busca ordenada: {}", true);
         return this.produtoRepository.findAllByOrderByDataCriacaoDesc();
     }
 
     public Produto produtoPorId(Long id) {
+        LOGGER.info("Iniciando busca de um produto por Id");
+        LOGGER.info("Id informado: {}", id);
         return this.produtoRepository.findById(id).orElseThrow(() -> new ProdutoNaoEncontradoException(id.toString()));
     }
 
     public Produto produtoPorNome(String nome) {
+        LOGGER.info("Iniciando busca de um produto por nome");
+        LOGGER.info("Nome informado: {}", nome);
         return this.produtoRepository.findByNome(nome).orElseThrow(() -> new ProdutoNaoEncontradoException(nome));
     }
 
     public boolean produtoExistePorNome(String nome) {
+        LOGGER.info("Iniciando busca para identificar se o produto existe pelo nome");
+        LOGGER.info("Nome informado: {}", nome);
         return this.produtoRepository.existsByNome(nome);
     }
 
-    public List<Produto> produtosPrecoAbaixoDe(Object preco) {
-        LOGGER.info("Iniciando service para buscar um preco abaixo do valor fornecido");
-        if (!(preco instanceof String precoString)) throw new QueryPrecoInvalidoException("O preco deve ser numerico");
+    public List<Produto> produtoPorPreco(Object preco, boolean precoAbaixo) {
+        LOGGER.info("Iniciando busca de produtos por preco");
+        LOGGER.info("Preco informado: {}", preco);
+        LOGGER.info("Preco abaixo: {}", precoAbaixo);
+        if (!(preco instanceof String precoString)) throw new QueryPrecoInvalidoException("Preco invalido");
         int precoInt = getPrecoInt(precoString);
         if (precoInt <= 0) throw new QueryPrecoInvalidoException("O preco nao pode ser zero ou negativo");
         var precoDecimal = decimal(precoInt);
-        return this.produtoRepository.precoAbaixoDe(precoDecimal);
-    }
-
-    public List<Produto> produtosPrecoAcimaDe(Object preco) {
-        LOGGER.info("Iniciando service para buscar um preco acima do valor fornecido");
-        if (!(preco instanceof String precoString)) throw new QueryPrecoInvalidoException("O preco deve ser numerico");
-        var precoInt = getPrecoInt(precoString);
-        if (precoInt <= 0) throw new QueryPrecoInvalidoException("O preco nao pode ser zero ou negativo");
-        var precoDecimal = decimal(precoInt);
-        return this.produtoRepository.precoAcimaDe(precoDecimal);
+        return precoAbaixo
+                ? this.produtoRepository.precoAbaixoDe(precoDecimal)
+                : this.produtoRepository.precoAcimaDe(precoDecimal);
     }
 
     public Produto cadastraProduto(ProdutoINDTO requisicao) {
+        LOGGER.info("Iniciando cadastro de produto");
         requisicao.validaTudo();
+        LOGGER.info("Verificando se o nome ja esta cadastrado");
         this.validaNomeProdutoJaExiste(requisicao.getNomeProduto());
         Produto produto = MAPPER.produtoINDTOParaProduto(requisicao);
-        var preco = produto.getPreco().round(new MathContext(produto.getPreco().intValue(), RoundingMode.CEILING));
+        var preco = produto.getPreco();
         produto.setPreco(preco);
         return this.produtoRepository.save(produto);
     }
@@ -153,6 +160,11 @@ public class ProdutoService {
     }
 
     private void validaNomeProdutoJaExiste(String nome) {
-        if (this.produtoRepository.existsByNome(nome)) throw new NomeProdutoJaCadastradoException(null);
+        LOGGER.info("Verificando se o nome ja existe");
+        if (this.produtoRepository.existsByNome(nome)) {
+            LOGGER.info("Produto com nome {} ja cadastrado", nome);
+            throw new NomeProdutoJaCadastradoException(nome);
+        }
+        LOGGER.info("Validacao do nome realizada com sucesso");
     }
 }
