@@ -56,13 +56,13 @@ public class ProdutoController {
     @GetMapping("/lista_preco_abaixo/{preco}")
     public ResponseEntity<CollectionModel<ProdutoOUTDTO>> listaProdutosPrecoAbaixo(@PathVariable Object preco) {
         LOGGER.info("Requisicao para listagem com preco abaixo recebida");
-        return this.obtemLista(this.produtoService.produtosPrecoAbaixoDe(preco), "listaProdutosPrecoAbaixo");
+        return this.obtemLista(this.produtoService.produtoPorPreco(preco, true), "listaProdutosPrecoAbaixo");
     }
 
     @GetMapping("/lista_preco_acima/{preco}")
     public ResponseEntity<CollectionModel<ProdutoOUTDTO>> listaProdutosPrecoAcima(@PathVariable Object preco) {
         LOGGER.info("Requisicao para listagem com preco acima recebida");
-        return this.obtemLista(this.produtoService.produtosPrecoAcimaDe(preco), "listaProdutosPrecoAcima");
+        return this.obtemLista(this.produtoService.produtoPorPreco(preco, false), "listaProdutosPrecoAcima");
     }
 
     @GetMapping("/lista_padrao")
