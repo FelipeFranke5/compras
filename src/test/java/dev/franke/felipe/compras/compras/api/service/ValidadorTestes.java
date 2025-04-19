@@ -4,9 +4,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import dev.franke.felipe.compras.compras.api.model.Comprador;
+import dev.franke.felipe.compras.compras.api.model.Produto;
 import java.util.List;
 
 public class ValidadorTestes {
+
+    public void validaNuloOptionalProduto(Object obj) {
+        assertNotNull(obj);
+        assertInstanceOf(Produto.class, obj);
+        var comprador = (Produto) obj;
+        assertNotNull(comprador.getNome());
+        assertNotNull(comprador.getPreco());
+    }
 
     public void validaNuloOptionalComprador(Object obj) {
         assertNotNull(obj);
