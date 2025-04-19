@@ -1,4 +1,7 @@
 name: Testar a aplicação
+permissions:
+  contents: read
+  pull-requests: write
 run-name: ${{ github.actor }} - Testes da aplicação
 on:
   push:
