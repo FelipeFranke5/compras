@@ -25,11 +25,17 @@
 
 ---
 
-## Funcionalidades (Trabalho em progresso)
+## Funcionalidades e Notas
 
 - **Monitoramento e visualização facilitada de logs**: Acessando http://localhost:5601, é possível acompanhar os logs da aplicação e utilizar filtros para buscar por registros específicos. Por exemplo: Filtrar logs em que o nível (level) seja igual à "ERROR" ou "WARN". ![exemplo](https://github.com/user-attachments/assets/2ece6157-1563-4894-8ba4-a5e9a25ee909) - Já implementado com configurações simples
-- **Produto**: CRUD completo implementado
-- **Comprador**: Implementação parcial (controller ainda pendente, testes iniciados)
+- **Migrações do banco com Flyway**: Inicializa o banco e cria as tabelas por db migrations. Ainda não implementado
+- **PostgreSQL como banco principal**: Deixa o H2 para os testes do repositório e PostgreSQL na aplicação principal. Ainda não implementado
+- **Testcontainers no repositório**: Complementar os testes do repositório subindo um Testcontainer (Usar H2 talvez?). Ainda não implementado
+- **Testes do Produto [Repository, Service, Controller]**: Em progresso
+- **Testes do Comprador [Repository, Service, Controller]**: Em progresso
+- **Testes da Compra [Repository, Service, Controller]**: Ainda não iniciado
+- **Produto**: CRUD completo implementado.
+- **Comprador**: Implementação parcial (controller ainda pendente)
 - **Compra**: Ainda não implementado
 
 ### Objetivo Final
