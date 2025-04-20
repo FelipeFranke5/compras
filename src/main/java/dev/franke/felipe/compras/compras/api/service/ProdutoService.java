@@ -4,6 +4,7 @@ import dev.franke.felipe.compras.compras.api.dto.in.ProdutoINDTO;
 import dev.franke.felipe.compras.compras.api.exception.ListaProdutosInvalidaException;
 import dev.franke.felipe.compras.compras.api.exception.NomeProdutoJaCadastradoException;
 import dev.franke.felipe.compras.compras.api.exception.ProdutoNaoEncontradoException;
+import dev.franke.felipe.compras.compras.api.exception.ProdutoRequisicaoInvalidaException;
 import dev.franke.felipe.compras.compras.api.exception.QueryPrecoInvalidoException;
 import dev.franke.felipe.compras.compras.api.mapper.ProdutoMapper;
 import dev.franke.felipe.compras.compras.api.model.Produto;
@@ -41,12 +42,14 @@ public class ProdutoService {
     public static int getPrecoInt(String precoString) {
         int precoInt;
         LOGGER.info("Realizando parsing do valor informado");
+
         try {
             precoInt = Integer.parseInt(precoString);
         } catch (NumberFormatException formato) {
             LOGGER.info("Parsing nao realizado. O valor informado nao e numerico");
             throw new QueryPrecoInvalidoException("O preco deve ser numerico");
         }
+
         LOGGER.info("Parsing realizado com sucesso");
         return precoInt;
     }
@@ -84,10 +87,12 @@ public class ProdutoService {
     public List<Produto> produtoPorPreco(Object preco, boolean precoAbaixo) {
         LOGGER.info("Iniciando busca de produtos por preco");
         LOGGER.info("Preco informado: {}", preco);
-        LOGGER.info("Preco abaixo: {}", precoAbaixo);
+        LOGGER.info("Flag de Preco abaixo definida para: {}", precoAbaixo);
+
         if (!(preco instanceof String precoString)) throw new QueryPrecoInvalidoException("Preco invalido");
         int precoInt = getPrecoInt(precoString);
         if (precoInt <= 0) throw new QueryPrecoInvalidoException("O preco nao pode ser zero ou negativo");
+
         var precoDecimal = decimal(precoInt);
         return precoAbaixo
                 ? this.produtoRepository.precoAbaixoDe(precoDecimal)
@@ -96,17 +101,26 @@ public class ProdutoService {
 
     public Produto cadastraProduto(ProdutoINDTO requisicao) {
         LOGGER.info("Iniciando cadastro de produto");
+
+        if (requisicao == null) {
+            LOGGER.warn("Requisicao nula");
+            throw new ProdutoRequisicaoInvalidaException("Requisicao nao pode ser nula");
+        }
+
         requisicao.validaTudo();
         LOGGER.info("Verificando se o nome ja esta cadastrado");
         this.validaNomeProdutoJaExiste(requisicao.getNomeProduto());
         Produto produto = MAPPER.produtoINDTOParaProduto(requisicao);
+
         var preco = produto.getPreco();
         produto.setPreco(preco);
         return this.produtoRepository.save(produto);
     }
 
     public ResultadoSomaProdutos calculaTotalProdutos(List<Object> ids) {
+        LOGGER.info("Iniciando funcao para somar os precos de uma lista de produtos");
         this.validaListaIdsEstaVazia(ids);
+
         var total = new AtomicInteger();
         var idsConsiderados = new ArrayList<Long>();
         var idsDesconsiderados = new ArrayList<>();
@@ -115,26 +129,28 @@ public class ProdutoService {
         var nomesProdutos = new ArrayList<String>();
 
         ids.forEach(id -> {
-            if (id instanceof Integer intId) {
+            if (id instanceof Number intId) {
                 Long idLong = intId.longValue();
                 idsConsiderados.add(idLong);
+
                 try {
                     var produto = this.produtoPorId(idLong);
-                    var precoProduto = produto.getPreco()
-                            .round(new MathContext(produto.getPreco().intValue(), RoundingMode.CEILING));
+                    var precoProduto = produto.getPreco();
                     total.addAndGet(precoProduto.intValue());
                     idsEncontrados.add(idLong);
-                    var descricaoProduto = produto.getNome() + " - " + produto.getPreco();
+                    var descricaoProduto =
+                            produto.getNome() + " - " + produto.getPreco().intValue();
                     nomesProdutos.add(descricaoProduto);
                 } catch (ProdutoNaoEncontradoException excecao) {
                     idsNaoEncontrados.add(idLong);
                 }
+
             } else {
                 idsDesconsiderados.add(id);
             }
         });
 
-        var soma = new BigDecimal(total.get()).round(new MathContext(total.get(), RoundingMode.CEILING));
+        var soma = new BigDecimal(total.get());
         return new ResultadoSomaProdutos(
                 soma, nomesProdutos, idsConsiderados, idsDesconsiderados, idsEncontrados, idsNaoEncontrados);
     }
@@ -156,15 +172,21 @@ public class ProdutoService {
     }
 
     private void validaListaIdsEstaVazia(List<Object> ids) {
-        if (ids == null || ids.isEmpty()) throw new ListaProdutosInvalidaException(null);
+        LOGGER.info("Verificando se a lista de objetos esta vazia para soma de produtos");
+        if (ids == null || ids.isEmpty()) {
+            LOGGER.warn("Lista de objetos esta vazia e nenhum calculo sera realizado");
+            throw new ListaProdutosInvalidaException("A lista esta vazia");
+        }
     }
 
     private void validaNomeProdutoJaExiste(String nome) {
-        LOGGER.info("Verificando se o nome ja existe");
+        LOGGER.info("Verificando no banco se existe um produto com este nome");
+
         if (this.produtoRepository.existsByNome(nome)) {
-            LOGGER.info("Produto com nome {} ja cadastrado", nome);
+            LOGGER.info("Produto com nome ({}) ja cadastrado no banco", nome);
             throw new NomeProdutoJaCadastradoException(nome);
         }
-        LOGGER.info("Validacao do nome realizada com sucesso");
+
+        LOGGER.info("Validacao do banco realizada com sucesso");
     }
 }
