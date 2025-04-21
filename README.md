@@ -6,17 +6,19 @@
 
 ## Tecnologias e Ferramentas
 
-- **[Docker](https://www.docker.com/)** - O recomendado é utilizar a imagem Docker e o arquivo **compose.yml** disponibilizados na pasta raíz do projeto para executar a aplicação e para que as dependências externas carreguem de forma automática
-- **[Elasticsearch](https://www.elastic.co/elasticsearch)** - Mecanismo de busca e centralização distribuída de logs
-- **[Kibana](https://www.elastic.co/kibana)** - Gera os dashboards e relatórios
-- **[Filebeat](https://www.elastic.co/beats/filebeat/)** - Essencial para enviar os logs estruturados para processamento do Elasticsearch + Kibana
+- **[Docker](https://www.docker.com/)** – O recomendado é utilizar a imagem Docker e o arquivo **compose.yml** disponibilizados na pasta raíz do projeto para executar a aplicação e para que as dependências externas carreguem de forma automática
+- **[Elasticsearch](https://www.elastic.co/elasticsearch)** – Mecanismo de busca e centralização distribuída de logs
+- **[Kibana](https://www.elastic.co/kibana)** – Gera os dashboards e relatórios
+- **[Filebeat](https://www.elastic.co/beats/filebeat/)** – Essencial para enviar os logs estruturados para processamento do Elasticsearch + Kibana
 - **[Java](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)** - Versão 17+
-- **[Spring Boot](https://start.spring.io/)** - Utilizando a versão 3.4.4
+- **[Spring Boot](https://start.spring.io/)** – Utilizando a versão 3.4.4
 - **[MapStruct](https://mapstruct.org/)** – Utilizado para mapeamento automático entre DTOs e entidades
-- **[JPA](https://spring.io/projects/spring-data-jpa)** - Para criação dos repositórios e manipulação do Banco de Dados H2. Será utilizado junto com o JDBC
-- **[Spring HATEOAS](https://spring.io/projects/spring-hateoas)** - Para que a API possa ser consumida em JSON e JSON+HAL
-- **[Log4j2](https://logging.apache.org/log4j/2.x/index.html)** - Para logging estruturado
+- **[JPA](https://spring.io/projects/spring-data-jpa)** – Para criação dos repositórios e manipulação do Banco de Dados H2. Será utilizado junto com o JDBC
+- **[Flyway](https://github.com/flyway/flyway)** – Para carregar as tabelas e executar migrações no banco de dados automáticamente
+- **[Spring HATEOAS](https://spring.io/projects/spring-hateoas)** – Para que a API possa ser consumida em JSON e JSON+HAL
+- **[Log4j2](https://logging.apache.org/log4j/2.x/index.html)** – Para logging estruturado
 - **[H2 Database](https://www.h2database.com/html/main.html)** – Banco de dados em memória. Apesar de essencial para funcionamento do projeto, o objetivo não é focar na configuração do banco
+- **[PostgreSQL](https://www.postgresql.org/)** – Banco relacional principal da aplicação
 - **[Lombok](https://projectlombok.org/)** – Redução de boilerplate
 - **[Spring Boot Starter Test](https://docs.spring.io/spring-boot/docs/1.5.7.RELEASE/reference/html/boot-features-testing.html)** – Testes com Mockito + JUnit
 - **[Spotless Maven Plugin](https://github.com/diffplug/spotless)** – Formatação automática do código Java com:
@@ -81,6 +83,7 @@ Atualmente, há testes cobrindo:
 
 - **Java;**
 - **Docker;**
+- **PostgreSQL;**
 - Para o correto funcionamento do sistema de monitorização, será necessário também inicializar: **Kibana**, **Elasticsearch** e **Filebeat** com as configurações default (Isso é feito de forma automática, caso realize o procedimento abaixo)
 - **Terminal Linux**, **Git Bash** ou alguma forma de executar comandos **Linux.**
 
@@ -99,7 +102,12 @@ Atualmente, há testes cobrindo:
     chmod +x exec_projeto.sh
     ```
 
-3. Execute o script:
+3. Defina o usuário e senha do banco PostgreSQL (Exemplo: usuariopsql e senhapsql):
+    ```bash
+    export API_COMPRAS_PSQL_USUARIO=usuariopsql && export API_COMPRAS_PSQL_SENHA=senhapsql
+    ```
+
+4. Execute o script:
     ```bash
     ./exec_projeto.sh
     ```
