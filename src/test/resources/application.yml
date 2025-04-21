@@ -4,3 +4,9 @@ spring:
     driverClassName: org.h2.Driver
     username: sa
     password: sa
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create-drop
+  flyway:
+    enabled: false
