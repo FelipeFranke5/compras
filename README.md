@@ -94,20 +94,24 @@ Atualmente, há testes cobrindo:
 1. Clone o repositório:
    ```bash
    git clone https://github.com/FelipeFranke5/compras.git
+   ```
+
+2. Abra a pasta do repositório:
+   ```bash
    cd compras
    ```
 
-2. Dê permissão de execução ao script:
+3. Dê permissão de execução ao script:
     ```bash
     chmod +x exec_projeto.sh
     ```
 
-3. Defina o usuário e senha do banco PostgreSQL (Exemplo: usuariopsql e senhapsql):
+4. Defina o usuário e senha do banco PostgreSQL (Exemplo: usuariopsql e senhapsql):
     ```bash
     export API_COMPRAS_PSQL_USUARIO=usuariopsql && export API_COMPRAS_PSQL_SENHA=senhapsql
     ```
 
-4. Execute o script:
+5. Execute o script:
     ```bash
     ./exec_projeto.sh
     ```
