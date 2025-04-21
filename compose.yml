@@ -10,8 +10,32 @@ services:
       - app_logs:/logs
     depends_on:
       - elasticsearch
+      - postgresql
     networks:
       - api_net
+    environment:
+      - API_COMPRAS_PSQL_SENHA=${API_COMPRAS_PSQL_SENHA}
+      - API_COMPRAS_PSQL_USUARIO=${API_COMPRAS_PSQL_USUARIO}
+      - POSTGRES_USER=${API_COMPRAS_PSQL_USUARIO}
+      - POSTGRES_PASSWORD=${API_COMPRAS_PSQL_SENHA}
+      - POSTGRES_DB=comprasdb
+
+  postgresql:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${API_COMPRAS_PSQL_USUARIO}
+      - POSTGRES_PASSWORD=${API_COMPRAS_PSQL_SENHA}
+      - POSTGRES_DB=comprasdb
+      - API_COMPRAS_PSQL_SENHA=${API_COMPRAS_PSQL_SENHA}
+      - API_COMPRAS_PSQL_USUARIO=${API_COMPRAS_PSQL_USUARIO}
+    networks:
+      - api_net
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0

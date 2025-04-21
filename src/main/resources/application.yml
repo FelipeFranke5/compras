@@ -1,6 +1,24 @@
 spring:
   application:
     name: compras
+  datasource:
+    url: jdbc:postgresql://postgresql:5432/${POSTGRES_DB}
+    username: ${API_COMPRAS_PSQL_USUARIO}
+    password: ${API_COMPRAS_PSQL_SENHA}
+    tomcat:
+      max-wait: 10000
+      max-active: 50
+      test-on-borrow: true
+  jpa:
+    generate-ddl: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+  flyway:
+    locations:
+    - classpath:db/migration/{vendor}
 
 server:
   port: 8081
