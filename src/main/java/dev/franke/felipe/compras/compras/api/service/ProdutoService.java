@@ -11,8 +11,6 @@ import dev.franke.felipe.compras.compras.api.model.Produto;
 import dev.franke.felipe.compras.compras.api.repository.ProdutoRepository;
 import dev.franke.felipe.compras.compras.api.service.lista_produtos.ResultadoSomaProdutos;
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,6 +28,27 @@ public class ProdutoService {
     public static final Logger LOGGER = LogManager.getLogger();
 
     private final ProdutoRepository produtoRepository;
+
+    public static void validaRequisicaoNula(ProdutoINDTO requisicao) {
+        if (requisicao == null) {
+            LOGGER.warn("Requisicao nula");
+            throw new ProdutoRequisicaoInvalidaException("Requisicao nao pode ser nula");
+        }
+    }
+
+    public static void validaProdutoNulo(Produto produto) {
+        if (produto == null) {
+            LOGGER.warn("Produto nulo");
+            throw new ProdutoRequisicaoInvalidaException("Produto nao pode ser nulo");
+        }
+    }
+
+    public static String idInvalidoOuTextoPadrao(Object idInvalido) {
+        if (idInvalido instanceof String idInvalidoString) {
+            return idInvalidoString.length() < 3 ? idInvalidoString : "texto_invalido";
+        }
+        return "objeto_invalido";
+    }
 
     public static BigDecimal decimal(int precoInt) {
         LOGGER.info("Criando BigDecimal com valor {}", precoInt);
@@ -101,12 +120,7 @@ public class ProdutoService {
 
     public Produto cadastraProduto(ProdutoINDTO requisicao) {
         LOGGER.info("Iniciando cadastro de produto");
-
-        if (requisicao == null) {
-            LOGGER.warn("Requisicao nula");
-            throw new ProdutoRequisicaoInvalidaException("Requisicao nao pode ser nula");
-        }
-
+        validaRequisicaoNula(requisicao);
         requisicao.validaTudo();
         LOGGER.info("Verificando se o nome ja esta cadastrado");
         this.validaNomeProdutoJaExiste(requisicao.getNomeProduto());
@@ -129,8 +143,8 @@ public class ProdutoService {
         var nomesProdutos = new ArrayList<String>();
 
         ids.forEach(id -> {
-            if (id instanceof Number intId) {
-                Long idLong = intId.longValue();
+            if (id instanceof Number idNumero) {
+                Long idLong = idNumero.longValue();
                 idsConsiderados.add(idLong);
 
                 try {
@@ -146,7 +160,7 @@ public class ProdutoService {
                 }
 
             } else {
-                idsDesconsiderados.add(id);
+                idsDesconsiderados.add(idInvalidoOuTextoPadrao(id));
             }
         });
 
@@ -157,17 +171,20 @@ public class ProdutoService {
 
     @Transactional
     public Produto alteraProduto(Produto produto, ProdutoINDTO requisicao) {
+        LOGGER.info("Iniciando metodo para alteracao de um produto");
+        validaRequisicaoNula(requisicao);
+        validaProdutoNulo(produto);
         requisicao.validaTudo();
         this.validaNomeProdutoJaExiste(requisicao.getNomeProduto());
         produto.setNome(requisicao.getNomeProduto());
-        produto.setPreco(requisicao
-                .getPrecoProduto()
-                .round(new MathContext(requisicao.getPrecoProduto().intValueExact(), RoundingMode.CEILING)));
+        produto.setPreco(requisicao.getPrecoProduto());
         return this.produtoRepository.save(produto);
     }
 
     @Transactional
     public void removeProduto(Produto produto) {
+        LOGGER.info("Iniciando metodo para remover um produto");
+        validaProdutoNulo(produto);
         this.produtoRepository.delete(produto);
     }
 

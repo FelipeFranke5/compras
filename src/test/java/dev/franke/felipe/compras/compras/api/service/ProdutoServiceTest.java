@@ -530,4 +530,38 @@ class ProdutoServiceTest {
         assertEquals(listaResultadoEsperadoIdsNaoEncontrados, resultado.idsNaoEncontrados());
         verify(repository, times(6)).findById(anyLong());
     }
+
+    @Test
+    @DisplayName("Teste - alteraProduto - Produto alterado e salvo")
+    void testeQuandoRequisicaoValida_AlteraProduto_SalvaProdutoAlterado() {
+        var produtoOriginal =
+                new Produto(1L, "Açucar", BigDecimal.valueOf(700), LocalDateTime.now(), LocalDateTime.now());
+        var produtoAlterado =
+                new Produto(1L, "Morango", BigDecimal.valueOf(1000), LocalDateTime.now(), LocalDateTime.now());
+        var requisicaoMudanca = new ProdutoINDTO();
+        requisicaoMudanca.setNomeProduto("Morango");
+        requisicaoMudanca.setPrecoProduto(BigDecimal.valueOf(1000));
+        when(repository.existsByNome(requisicaoMudanca.getNomeProduto())).thenReturn(false);
+        when(repository.save(produtoOriginal)).thenReturn(produtoAlterado);
+        var resultado = service.alteraProduto(produtoOriginal, requisicaoMudanca);
+        validador.validaNuloOptionalProduto(resultado);
+        verify(repository).existsByNome(requisicaoMudanca.getNomeProduto());
+        verify(repository).save(produtoOriginal);
+    }
+
+    @Test
+    @DisplayName("Teste - removeProduto - Produto removido")
+    void testeQuandoRequisicaoValida_RemoveProduto_RemoveProdutoDoBanco() {
+        var produtoOriginal =
+                new Produto(1L, "Açucar", BigDecimal.valueOf(700), LocalDateTime.now(), LocalDateTime.now());
+        service.removeProduto(produtoOriginal);
+        verify(repository, times(1)).delete(produtoOriginal);
+    }
+
+    @Test
+    @DisplayName("Teste - removeProduto - Produto nulo")
+    void testeQuandoProdutoNulo_RemoveProduto_LancaProdutoRequisicaoInvalidaException() {
+        assertThrowsExactly(ProdutoRequisicaoInvalidaException.class, () -> service.removeProduto(null));
+        verify(repository, never()).delete(any(Produto.class));
+    }
 }
