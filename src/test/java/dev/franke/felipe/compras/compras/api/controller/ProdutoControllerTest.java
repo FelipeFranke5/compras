@@ -1,5 +1,6 @@
 package dev.franke.felipe.compras.compras.api.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -8,9 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.franke.felipe.compras.compras.api.exception.QueryPrecoInvalidoException;
 import dev.franke.felipe.compras.compras.api.links.ProdutoLink;
-import dev.franke.felipe.compras.compras.api.model.Produto;
 import dev.franke.felipe.compras.compras.api.service.ProdutoService;
 import dev.franke.felipe.compras.compras.api.service.lista_produtos.ResultadoSomaProdutos;
 import java.math.BigDecimal;
@@ -27,6 +26,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(ProdutoController.class)
 class ProdutoControllerTest {
 
+    private static final String URL_BASE = "/api/v1/produto";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -38,8 +39,6 @@ class ProdutoControllerTest {
 
     @MockitoBean
     private ProdutoLink link;
-
-    private static final String URL_BASE = "/api/v1/produto";
 
     @Test
     @DisplayName("Teste - existePorNome - Nome existe")
@@ -189,40 +188,56 @@ class ProdutoControllerTest {
     @Test
     @DisplayName("Teste - listaProdutosPrecoAbaixo - Valor valido/lista vazia")
     void testeQuandoValorValido_ListaProdutosPrecoAbaixo_RetornaListaVazia() throws Exception {
-        List<Produto> listaVazia = List.of();
-        when(service.produtoPorPreco("5000", true)).thenReturn(listaVazia);
-        var uri = URL_BASE + "/lista_preco_abaixo/5000";
-        mockMvc.perform(get(uri)).andDo(print()).andExpect(status().isOk());
+        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        var testeFinalizado = auxiliarTestes.listaProdutosValorValidoListaVazia(true);
+        assertTrue(testeFinalizado);
     }
 
     @Test
     @DisplayName("Teste - listaProdutosPrecoAbaixo - Valor valido/lista com produtos")
     void testeQuandoValorValido_ListaProdutosPrecoAbaixo_RetornaListaDeProdutos() throws Exception {
-        var produto1 = new Produto("Açucar", BigDecimal.valueOf(3000));
-        var produto2 = new Produto("PaoDeForma", BigDecimal.valueOf(2000));
-        var produtos = List.of(produto1, produto2);
-
-        when(service.produtoPorPreco("5000", true)).thenReturn(produtos);
-        var uri = URL_BASE + "/lista_preco_abaixo/5000";
-
-        var matcherTamanhoLista = Matchers.hasSize(2);
-        var matcherNomesProdutos = Matchers.contains(produto1.getNome(), produto2.getNome());
-        var matcherPrecosProdutos = Matchers.contains(
-                produto1.getPreco().intValue(), produto2.getPreco().intValue());
-
-        mockMvc.perform(get(uri))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.produtos", matcherTamanhoLista))
-                .andExpect(jsonPath("$._embedded.produtos[*].nomeProduto", matcherNomesProdutos))
-                .andExpect(jsonPath("$._embedded.produtos[*].precoProduto", matcherPrecosProdutos));
+        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        var testeFinalizado = auxiliarTestes.listaProdutosValorValidoListaComProdutos(true);
+        assertTrue(testeFinalizado);
     }
 
     @Test
     @DisplayName("Teste - listaProdutosPrecoAbaixo - Valor invalido")
     void testeQuandoValorInvalido_ListaProdutosPrecoAbaixo_RetornaBadRequest() throws Exception {
-        when(service.produtoPorPreco("[]", true)).thenThrow(QueryPrecoInvalidoException.class);
-        var uri = URL_BASE + "/lista_preco_abaixo/[]";
-        mockMvc.perform(get(uri)).andDo(print()).andExpect(status().isBadRequest());
+        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        var testeFinalizado = auxiliarTestes.listaProdutosValorInvalido(true);
+        assertTrue(testeFinalizado);
+    }
+
+    @Test
+    @DisplayName("Teste - listaProdutosPrecoAcima - Valor valido/lista vazia")
+    void testeQuandoValorValido_ListaProdutosPrecoAcima_RetornaListaVazia() throws Exception {
+        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        var testeFinalizado = auxiliarTestes.listaProdutosValorValidoListaVazia(false);
+        assertTrue(testeFinalizado);
+    }
+
+    @Test
+    @DisplayName("Teste - listaProdutosPrecoAcima - Valor valido/lista com produtos")
+    void testeQuandoValorValido_ListaProdutosPrecoAcima_RetornaListaDeProdutos() throws Exception {
+        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        var testeFinalizado = auxiliarTestes.listaProdutosValorValidoListaComProdutos(false);
+        assertTrue(testeFinalizado);
+    }
+
+    @Test
+    @DisplayName("Teste - listaProdutosPrecoAcima - Valor invalido")
+    void testeQuandoValorInvalido_ListaProdutosPrecoAcima_RetornaBadRequest() throws Exception {
+        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        var testeFinalizado = auxiliarTestes.listaProdutosValorInvalido(false);
+        assertTrue(testeFinalizado);
+    }
+
+    @Test
+    @DisplayName("Teste - listaProdutos - Lista Vazia")
+    void testeQuandoNaoHaProdutos_ListaProdutos_RetornaListaVazia() throws Exception {
+        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        var testeFinalizado = auxiliarTestes.listaProdutosPadraoVazia(false);
+        assertTrue(testeFinalizado);
     }
 }
