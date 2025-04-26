@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import dev.franke.felipe.compras.compras.api.model.Produto;
+import java.math.BigDecimal;
 import java.util.List;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -18,6 +19,59 @@ public class ResponseAssertionHelper {
 
     public ResponseAssertionHelper(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
+    }
+
+    public Matcher<?>[] matchersMixProdutos(BigDecimal soma, List<String> produtos, List<?> listaIds) {
+        var matcherSoma = Matchers.is(soma.intValue());
+        var matcherProdutos = Matchers.is(produtos);
+        var matcherIdsValidos = Matchers.contains(1, 2, 3, 4);
+        var matcherIdsInvalidos = Matchers.contains(listaIds.get(4), listaIds.get(5));
+        var matcherIdsEncontrados = Matchers.contains(1, 2);
+        var matcherIdsNaoEncontrados = Matchers.contains(3, 4);
+        return new Matcher[] {
+            matcherSoma,
+            matcherProdutos,
+            matcherIdsValidos,
+            matcherIdsInvalidos,
+            matcherIdsEncontrados,
+            matcherIdsNaoEncontrados
+        };
+    }
+
+    public Matcher<?>[] matchersAlgunsProdutosEncontrados(BigDecimal soma, List<String> produtos) {
+        var matcherSoma = Matchers.is(soma.intValue());
+        var matcherProdutos = Matchers.is(produtos);
+        var matcherIdsValidos = Matchers.contains(1, 2);
+        var matcherIdsInvalidos = Matchers.hasSize(0);
+        var matcherIdsEncontrados = Matchers.contains(1, 2);
+        var matcherIdsNaoEncontrados = Matchers.hasSize(0);
+        return new Matcher[] {
+            matcherSoma,
+            matcherProdutos,
+            matcherIdsValidos,
+            matcherIdsInvalidos,
+            matcherIdsEncontrados,
+            matcherIdsNaoEncontrados
+        };
+    }
+
+    public Matcher<?>[] matchersNenhumProdutoEncontrado(BigDecimal soma, List<String> produtos) {
+        assert soma != null;
+        assert produtos != null;
+        var matcherSoma = Matchers.is(soma.intValue());
+        var matcherProdutos = Matchers.is(produtos);
+        var matcherIdsValidos = Matchers.contains(1, 2, 3);
+        var matcherIdsInvalidos = Matchers.hasSize(0);
+        var matcherIdsEncontrados = Matchers.hasSize(0);
+        var matcherIdsNaoEncontrados = Matchers.contains(1, 2, 3);
+        return new Matcher[] {
+            matcherSoma,
+            matcherProdutos,
+            matcherIdsValidos,
+            matcherIdsInvalidos,
+            matcherIdsEncontrados,
+            matcherIdsNaoEncontrados
+        };
     }
 
     public Matcher<?>[] matchersProdutos(List<Produto> produtos) {
@@ -72,5 +126,19 @@ public class ResponseAssertionHelper {
 
     public void execAssertionsListaProdutosVazia(String uri) throws Exception {
         mockMvc.perform(get(uri)).andDo(print()).andExpect(status().isOk());
+    }
+
+    public void execAssertionsNomeExiste(String uri) throws Exception {
+        mockMvc.perform(get(uri))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.existe", Matchers.is(true)));
+    }
+
+    public void execAssertionsNomeNaoExiste(String uri) throws Exception {
+        mockMvc.perform(get(uri))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.existe", Matchers.is(false)));
     }
 }

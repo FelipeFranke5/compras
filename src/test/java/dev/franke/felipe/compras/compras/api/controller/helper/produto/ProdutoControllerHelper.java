@@ -1,10 +1,9 @@
 package dev.franke.felipe.compras.compras.api.controller.helper.produto;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.franke.felipe.compras.compras.api.service.ProdutoService;
+import java.math.BigDecimal;
+import java.util.List;
 import org.hamcrest.Matcher;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -12,16 +11,14 @@ public class ProdutoControllerHelper {
 
     private static final String URL_BASE = "/api/v1/produto";
 
-    private final MockMvc mockMvc;
-    private final ProdutoService service;
     private final ProdutoServiceHelper serviceHelper;
     private final ResponseAssertionHelper assertionHelper;
+    private final ObjectMapper mapper;
 
-    public ProdutoControllerHelper(MockMvc mockMvc, ProdutoService produtoService) {
-        this.mockMvc = mockMvc;
-        this.service = produtoService;
+    public ProdutoControllerHelper(MockMvc mockMvc, ProdutoService produtoService, ObjectMapper mapper) {
         this.serviceHelper = new ProdutoServiceHelper(produtoService);
         this.assertionHelper = new ResponseAssertionHelper(mockMvc);
+        this.mapper = mapper;
     }
 
     private String obtemUrlDaListagem(boolean ordenada) {
@@ -34,6 +31,59 @@ public class ProdutoControllerHelper {
 
     private String obtemUrlPrecoValorInvalido(boolean precoAbaixo) {
         return precoAbaixo ? URL_BASE + "/lista_preco_abaixo/[]" : URL_BASE + "/lista_preco_acima/[]";
+    }
+
+    private String obtemUrlSomaPreco() {
+        return URL_BASE + "/soma_preco_produtos";
+    }
+
+    private String obtemUrlExistePorNome() {
+        return URL_BASE + "/existe/PaoDeForma";
+    }
+
+    public boolean nomeExiste() throws Exception {
+        serviceHelper.mockaProdutoPorNomeExiste();
+        assertionHelper.execAssertionsNomeExiste(obtemUrlExistePorNome());
+        return true;
+    }
+
+    public boolean nomeNaoExiste() throws Exception {
+        serviceHelper.mockaProdutoPorNomeNaoExiste();
+        assertionHelper.execAssertionsNomeNaoExiste(obtemUrlExistePorNome());
+        return true;
+    }
+
+    public boolean somaPrecos(Object[] mocks, Matcher<?>[] matchers) throws Exception {
+        var requisicaoString = mapper.writeValueAsString(mocks[0]);
+        return assertionsSomaPrecos(matchers, obtemUrlSomaPreco(), requisicaoString);
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean somaPrecosNenhumId() throws Exception {
+        var mocks = serviceHelper.mockaSomaProdutosNenhumIdEncontrado();
+        var soma = (BigDecimal) mocks[1];
+        var produtos = (List<String>) mocks[2];
+        var matchers = assertionHelper.matchersNenhumProdutoEncontrado(soma, produtos);
+        return somaPrecos(mocks, matchers);
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean somaPrecosAlgunsIds() throws Exception {
+        var mocks = serviceHelper.mockaSomaProdutosIdsEncontrados();
+        var soma = (BigDecimal) mocks[1];
+        var produtos = (List<String>) mocks[2];
+        var matchers = assertionHelper.matchersAlgunsProdutosEncontrados(soma, produtos);
+        return somaPrecos(mocks, matchers);
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean somaPrecosMixIdsValidosEinvalidos() throws Exception {
+        var mocks = serviceHelper.mockaSomaProdutosMixProdutos();
+        var ids = (List<?>) mocks[0];
+        var soma = (BigDecimal) mocks[1];
+        var produtos = (List<String>) mocks[2];
+        var matchers = assertionHelper.matchersMixProdutos(soma, produtos, ids);
+        return somaPrecos(mocks, matchers);
     }
 
     public boolean listaProdutosValorValidoListaVazia(boolean precoAbaixo) throws Exception {
@@ -57,7 +107,7 @@ public class ProdutoControllerHelper {
 
     public boolean listaProdutosPadraoVazia(boolean ordenada) throws Exception {
         serviceHelper.mockaListagemPadrao(ordenada);
-        mockMvc.perform(get(obtemUrlDaListagem(ordenada))).andDo(print()).andExpect(status().isOk());
+        assertionHelper.execAssertionsListaProdutosVazia(obtemUrlDaListagem(ordenada));
         return true;
     }
 
