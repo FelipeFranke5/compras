@@ -14,12 +14,15 @@ import dev.franke.felipe.compras.compras.api.service.ProdutoService;
 import dev.franke.felipe.compras.compras.api.service.lista_produtos.ResultadoSomaProdutos;
 import java.math.BigDecimal;
 import java.util.List;
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 class ProdutoControllerTest {
 
     private static final String URL_BASE = "/api/v1/produto";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProdutoControllerTest.class);
 
     @Autowired
     private MockMvc mockMvc;
@@ -40,11 +44,30 @@ class ProdutoControllerTest {
     @MockitoBean
     private ProdutoLink link;
 
+    private ProdutoControllerHelper auxiliarTestes;
+
+    @BeforeEach
+    void setUp() {
+        auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+    }
+
+    private void exibirNomeMetodo(String nomeMetodo) {
+        LOGGER.info("Metodo == {}", nomeMetodo);
+    }
+
+    private String nomeMetodo() {
+        return StackWalker.getInstance()
+                .walk(s -> s.skip(1).findFirst())
+                .orElseThrow(() -> new RuntimeException("Erro ao obter nome do metodo"))
+                .getMethodName();
+    }
+
     @Test
     @DisplayName("Teste - existePorNome - Nome existe")
     void testeQuandoNomeExiste_ExistePorNome_RetornaTrue() throws Exception {
         when(service.produtoExistePorNome("PaoDeForma")).thenReturn(true);
         var uri = URL_BASE + "/existe/PaoDeForma";
+        exibirNomeMetodo(nomeMetodo());
         mockMvc.perform(get(uri))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -56,6 +79,7 @@ class ProdutoControllerTest {
     void testeQuandoNomeNaoExiste_ExistePorNome_RetornaFalse() throws Exception {
         when(service.produtoExistePorNome("PaoDeForma")).thenReturn(false);
         var uri = URL_BASE + "/existe/PaoDeForma";
+        exibirNomeMetodo(nomeMetodo());
         mockMvc.perform(get(uri))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -86,16 +110,18 @@ class ProdutoControllerTest {
         var matcherIdsInvalidos = Matchers.hasSize(0);
         var matcherIdsEncontrados = Matchers.hasSize(0);
         var matcherIdsNaoEncontrados = Matchers.contains(1, 2, 3);
+        var matchers = new Matcher[] {
+            matcherSoma,
+            matcherProdutos,
+            matcherIdsValidos,
+            matcherIdsInvalidos,
+            matcherIdsEncontrados,
+            matcherIdsNaoEncontrados
+        };
 
-        mockMvc.perform(get(uri).content(requisicaoString).contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.soma", matcherSoma))
-                .andExpect(jsonPath("$.produtos", matcherProdutos))
-                .andExpect(jsonPath("$.idsValidos", matcherIdsValidos))
-                .andExpect(jsonPath("$.idsInvalidos", matcherIdsInvalidos))
-                .andExpect(jsonPath("$.idsEncontrados", matcherIdsEncontrados))
-                .andExpect(jsonPath("$.idsNaoEncontrados", matcherIdsNaoEncontrados));
+        exibirNomeMetodo(nomeMetodo());
+        var testeFinalizado = auxiliarTestes.assertionsSomaPrecos(matchers, uri, requisicaoString);
+        assertTrue(testeFinalizado);
     }
 
     @Test
@@ -129,16 +155,18 @@ class ProdutoControllerTest {
         var matcherIdsInvalidos = Matchers.hasSize(0);
         var matcherIdsEncontrados = Matchers.contains(1, 2);
         var matcherIdsNaoEncontrados = Matchers.hasSize(0);
+        var matchers = new Matcher[] {
+            matcherSoma,
+            matcherProdutos,
+            matcherIdsValidos,
+            matcherIdsInvalidos,
+            matcherIdsEncontrados,
+            matcherIdsNaoEncontrados
+        };
 
-        mockMvc.perform(get(uri).content(requisicaoString).contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.soma", matcherSoma))
-                .andExpect(jsonPath("$.produtos", matcherProdutos))
-                .andExpect(jsonPath("$.idsValidos", matcherIdsValidos))
-                .andExpect(jsonPath("$.idsInvalidos", matcherIdsInvalidos))
-                .andExpect(jsonPath("$.idsEncontrados", matcherIdsEncontrados))
-                .andExpect(jsonPath("$.idsNaoEncontrados", matcherIdsNaoEncontrados));
+        exibirNomeMetodo(nomeMetodo());
+        var testeFinalizado = auxiliarTestes.assertionsSomaPrecos(matchers, uri, requisicaoString);
+        assertTrue(testeFinalizado);
     }
 
     @Test
@@ -173,22 +201,24 @@ class ProdutoControllerTest {
         var matcherIdsInvalidos = Matchers.contains(listaIds.get(4), listaIds.get(5));
         var matcherIdsEncontrados = Matchers.contains(1, 2);
         var matcherIdsNaoEncontrados = Matchers.contains(3, 4);
+        var matchers = new Matcher[] {
+            matcherSoma,
+            matcherProdutos,
+            matcherIdsValidos,
+            matcherIdsInvalidos,
+            matcherIdsEncontrados,
+            matcherIdsNaoEncontrados
+        };
 
-        mockMvc.perform(get(uri).content(requisicaoString).contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.soma", matcherSoma))
-                .andExpect(jsonPath("$.produtos", matcherProdutos))
-                .andExpect(jsonPath("$.idsValidos", matcherIdsValidos))
-                .andExpect(jsonPath("$.idsInvalidos", matcherIdsInvalidos))
-                .andExpect(jsonPath("$.idsEncontrados", matcherIdsEncontrados))
-                .andExpect(jsonPath("$.idsNaoEncontrados", matcherIdsNaoEncontrados));
+        exibirNomeMetodo(nomeMetodo());
+        var testeFinalizado = auxiliarTestes.assertionsSomaPrecos(matchers, uri, requisicaoString);
+        assertTrue(testeFinalizado);
     }
 
     @Test
     @DisplayName("Teste - listaProdutosPrecoAbaixo - Valor valido/lista vazia")
     void testeQuandoValorValido_ListaProdutosPrecoAbaixo_RetornaListaVazia() throws Exception {
-        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        exibirNomeMetodo(nomeMetodo());
         var testeFinalizado = auxiliarTestes.listaProdutosValorValidoListaVazia(true);
         assertTrue(testeFinalizado);
     }
@@ -196,7 +226,7 @@ class ProdutoControllerTest {
     @Test
     @DisplayName("Teste - listaProdutosPrecoAbaixo - Valor valido/lista com produtos")
     void testeQuandoValorValido_ListaProdutosPrecoAbaixo_RetornaListaDeProdutos() throws Exception {
-        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        exibirNomeMetodo(nomeMetodo());
         var testeFinalizado = auxiliarTestes.listaProdutosValorValidoListaComProdutos(true);
         assertTrue(testeFinalizado);
     }
@@ -204,7 +234,7 @@ class ProdutoControllerTest {
     @Test
     @DisplayName("Teste - listaProdutosPrecoAbaixo - Valor invalido")
     void testeQuandoValorInvalido_ListaProdutosPrecoAbaixo_RetornaBadRequest() throws Exception {
-        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        exibirNomeMetodo(nomeMetodo());
         var testeFinalizado = auxiliarTestes.listaProdutosValorInvalido(true);
         assertTrue(testeFinalizado);
     }
@@ -212,7 +242,7 @@ class ProdutoControllerTest {
     @Test
     @DisplayName("Teste - listaProdutosPrecoAcima - Valor valido/lista vazia")
     void testeQuandoValorValido_ListaProdutosPrecoAcima_RetornaListaVazia() throws Exception {
-        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        exibirNomeMetodo(nomeMetodo());
         var testeFinalizado = auxiliarTestes.listaProdutosValorValidoListaVazia(false);
         assertTrue(testeFinalizado);
     }
@@ -220,7 +250,7 @@ class ProdutoControllerTest {
     @Test
     @DisplayName("Teste - listaProdutosPrecoAcima - Valor valido/lista com produtos")
     void testeQuandoValorValido_ListaProdutosPrecoAcima_RetornaListaDeProdutos() throws Exception {
-        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        exibirNomeMetodo(nomeMetodo());
         var testeFinalizado = auxiliarTestes.listaProdutosValorValidoListaComProdutos(false);
         assertTrue(testeFinalizado);
     }
@@ -228,7 +258,7 @@ class ProdutoControllerTest {
     @Test
     @DisplayName("Teste - listaProdutosPrecoAcima - Valor invalido")
     void testeQuandoValorInvalido_ListaProdutosPrecoAcima_RetornaBadRequest() throws Exception {
-        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        exibirNomeMetodo(nomeMetodo());
         var testeFinalizado = auxiliarTestes.listaProdutosValorInvalido(false);
         assertTrue(testeFinalizado);
     }
@@ -236,8 +266,32 @@ class ProdutoControllerTest {
     @Test
     @DisplayName("Teste - listaProdutos - Lista Vazia")
     void testeQuandoNaoHaProdutos_ListaProdutos_RetornaListaVazia() throws Exception {
-        var auxiliarTestes = new ProdutoControllerHelper(mockMvc, service);
+        exibirNomeMetodo(nomeMetodo());
         var testeFinalizado = auxiliarTestes.listaProdutosPadraoVazia(false);
+        assertTrue(testeFinalizado);
+    }
+
+    @Test
+    @DisplayName("Teste - listaProdutos - Lista com Produtos")
+    void testeQuandoProdutosExistem_ListaProdutos_RetornaListaComProdutos() throws Exception {
+        exibirNomeMetodo(nomeMetodo());
+        var testeFinalizado = auxiliarTestes.listaProdutosPadraoComProdutos(false);
+        assertTrue(testeFinalizado);
+    }
+
+    @Test
+    @DisplayName("Teste - listaOrdenada - Lista Vazia")
+    void testeQuandoNaoHaProdutos_ListaOrdenada_RetornaListaVazia() throws Exception {
+        exibirNomeMetodo(nomeMetodo());
+        var testeFinalizado = auxiliarTestes.listaProdutosPadraoVazia(true);
+        assertTrue(testeFinalizado);
+    }
+
+    @Test
+    @DisplayName("Teste - listaOrdenada - Lista com Produtos")
+    void testeQuandoProdutosExistem_ListaOrdenada_RetornaListaComProdutos() throws Exception {
+        exibirNomeMetodo(nomeMetodo());
+        var testeFinalizado = auxiliarTestes.listaProdutosPadraoComProdutos(true);
         assertTrue(testeFinalizado);
     }
 }
