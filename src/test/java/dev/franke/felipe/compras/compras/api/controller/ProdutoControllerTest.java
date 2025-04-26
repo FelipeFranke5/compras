@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.franke.felipe.compras.compras.api.controller.helper.produto.ProdutoControllerHelper;
 import dev.franke.felipe.compras.compras.api.links.ProdutoLink;
 import dev.franke.felipe.compras.compras.api.service.ProdutoService;
 import dev.franke.felipe.compras.compras.api.service.lista_produtos.ResultadoSomaProdutos;
