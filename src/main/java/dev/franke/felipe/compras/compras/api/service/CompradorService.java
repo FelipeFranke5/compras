@@ -19,26 +19,26 @@ public class CompradorService {
 
     private final CompradorRepository compradorRepository;
 
-    public List<Comprador> listaCompradores() {
-        return this.compradorRepository.findAll();
-    }
-
-    public List<Comprador> listaCompradoresAtivos() {
-        return this.compradorRepository.compradoresAtivos();
-    }
-
-    public List<Comprador> listaCompradoresNegativados() {
-        return this.compradorRepository.compradoresNegativados();
-    }
-
     private static void validaCompradorERequisicao(Comprador comprador, BigDecimal valor) {
         if (comprador == null) throw new CompradorObrigatorioException("O comprador e obrigatorio");
         if (valor == null) throw new ValorProdutoObrigatorioException("O valor e obrigatorio");
     }
 
+    public List<Comprador> listaCompradores() {
+        return compradorRepository.findAll();
+    }
+
+    public List<Comprador> listaCompradoresAtivos() {
+        return compradorRepository.compradoresAtivos();
+    }
+
+    public List<Comprador> listaCompradoresNegativados() {
+        return compradorRepository.compradoresNegativados();
+    }
+
     public Comprador porId(String id) {
         try {
-            return this.compradorRepository
+            return compradorRepository
                     .findById(UUID.fromString(id))
                     .orElseThrow(
                             () -> new CompradorNaoEncontradoException("Comprador com id " + id + " nao encontrado"));
