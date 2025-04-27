@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(ProdutoController.class)
 class ProdutoControllerTest {
 
-    private static final String URL_BASE = "/api/v1/produto";
     private static final Logger LOGGER = LoggerFactory.getLogger(ProdutoControllerTest.class);
 
     @Autowired
