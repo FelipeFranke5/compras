@@ -5,6 +5,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import dev.franke.felipe.compras.compras.api.controller.CompradorController;
 import dev.franke.felipe.compras.compras.api.controller.helper.comprador.MetodoController;
+import dev.franke.felipe.compras.compras.api.dto.in.CompradorINDTO;
 import dev.franke.felipe.compras.compras.api.dto.out.CompradorOUTDTO;
 import dev.franke.felipe.compras.compras.api.mapper.CompradorMapper;
 import dev.franke.felipe.compras.compras.api.model.Comprador;
@@ -20,23 +21,57 @@ public class CompradorLink {
 
     private static final CompradorMapper MAPPER = CompradorMapper.INSTANCIA;
 
-    private static final Link COMPRADORES_ATIVOS_SELF =
-            linkTo(methodOn(CompradorController.class).listaCompradoresAtivos()).withSelfRel();
-    private static final Link COMPRADORES_SELF =
-            linkTo(methodOn(CompradorController.class).listaCompradores()).withSelfRel();
-    private static final Link COMPRADORES_NEGATIVADOS_SELF = linkTo(
-                    methodOn(CompradorController.class).listaCompradoresNegativados())
-            .withSelfRel();
-    private static final Link COMPRADORES_ATIVOS =
-            linkTo(methodOn(CompradorController.class).listaCompradoresAtivos()).withRel("compradores-ativos");
-    private static final Link COMPRADORES =
-            linkTo(methodOn(CompradorController.class).listaCompradores()).withRel("compradores");
-    private static final Link COMPRADORES_NEGATIVADOS = linkTo(
-                    methodOn(CompradorController.class).listaCompradoresNegativados())
-            .withRel("compradores-negativados");
+    private static CompradorINDTO compradorINDTO;
+
+    static {
+        compradorINDTO = new CompradorINDTO();
+        compradorINDTO.setNome("Teste");
+    }
+
+    private static Link compradoresAtivosSelf() {
+        return linkTo(methodOn(CompradorController.class).listaCompradoresAtivos())
+                .withSelfRel();
+    }
+
+    private static Link compradoresSelf() {
+        return linkTo(methodOn(CompradorController.class).listaCompradores()).withSelfRel();
+    }
+
+    private static Link compradoresNegativadosSelf() {
+        return linkTo(methodOn(CompradorController.class).listaCompradoresNegativados())
+                .withSelfRel();
+    }
+
+    private static Link criaCompradorSelf() {
+        return linkTo(methodOn(CompradorController.class).cadastra(compradorINDTO))
+                .withSelfRel();
+    }
+
+    private static Link compradoresAtivos() {
+        return linkTo(methodOn(CompradorController.class).listaCompradoresAtivos())
+                .withRel("compradores-ativos");
+    }
+
+    private static Link compradores() {
+        return linkTo(methodOn(CompradorController.class).listaCompradores()).withRel("compradores");
+    }
+
+    private static Link compradoresNegativados() {
+        return linkTo(methodOn(CompradorController.class).listaCompradoresNegativados())
+                .withRel("compradores-negativados");
+    }
+
+    private static Link criaComprador() {
+        return linkTo(methodOn(CompradorController.class).cadastra(compradorINDTO))
+                .withRel("criar-comprador");
+    }
 
     private static Link comIdSelf(UUID id) {
         return linkTo(methodOn(CompradorController.class).porId(id.toString())).withSelfRel();
+    }
+
+    private static Link comId(UUID id) {
+        return linkTo(methodOn(CompradorController.class).porId(id.toString())).withRel("comprador-por-id");
     }
 
     //
@@ -57,29 +92,40 @@ public class CompradorLink {
 
     public Link selfLink(MetodoController metodoController) {
         return switch (metodoController) {
-            case LISTA_NEGATIVADOS -> COMPRADORES_NEGATIVADOS_SELF;
-            case LISTA_COMPRADORES_ATIVOS -> COMPRADORES_ATIVOS_SELF;
-            case DEFAULT -> COMPRADORES_SELF;
-            default -> COMPRADORES_SELF;
+            case LISTA_NEGATIVADOS -> compradoresNegativadosSelf();
+            case LISTA_COMPRADORES_ATIVOS -> compradoresAtivosSelf();
+            case CADASTRO -> criaCompradorSelf();
+            case DEFAULT -> compradoresSelf();
+            default -> compradoresSelf();
         };
     }
 
     public Link selfLink(MetodoController metodoController, UUID id) {
         return switch (metodoController) {
-            case LISTA_NEGATIVADOS -> COMPRADORES_NEGATIVADOS_SELF;
-            case LISTA_COMPRADORES_ATIVOS -> COMPRADORES_ATIVOS_SELF;
+            case LISTA_NEGATIVADOS -> compradoresNegativadosSelf();
+            case LISTA_COMPRADORES_ATIVOS -> compradoresAtivosSelf();
+            case CADASTRO -> criaCompradorSelf();
             case POR_ID -> comIdSelf(id);
-            case DEFAULT -> COMPRADORES_SELF;
-            default -> COMPRADORES_SELF;
+            case DEFAULT -> compradoresSelf();
+            default -> compradoresSelf();
         };
     }
 
     public Link[] linksSemId(MetodoController metodoController) {
-        return new Link[] {selfLink(metodoController), COMPRADORES_ATIVOS, COMPRADORES, COMPRADORES_NEGATIVADOS};
+        return new Link[] {
+            selfLink(metodoController), compradoresAtivos(), compradores(), compradoresNegativados(), criaComprador()
+        };
     }
 
     public Link[] linksComId(MetodoController metodoController, UUID id) {
-        return new Link[] {selfLink(metodoController, id), COMPRADORES_ATIVOS, COMPRADORES, COMPRADORES_NEGATIVADOS};
+        return new Link[] {
+            selfLink(metodoController, id),
+            compradoresAtivos(),
+            compradores(),
+            compradoresNegativados(),
+            criaComprador(),
+            comId(id)
+        };
     }
 
     public CollectionModel<CompradorOUTDTO> preparaLista(
