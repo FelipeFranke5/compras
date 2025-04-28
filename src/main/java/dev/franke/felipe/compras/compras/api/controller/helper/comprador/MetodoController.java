@@ -5,5 +5,6 @@ public enum MetodoController {
     LISTA_NORMAL,
     LISTA_COMPRADORES_ATIVOS,
     LISTA_NEGATIVADOS,
-    POR_ID
+    POR_ID,
+    CADASTRO
 }
