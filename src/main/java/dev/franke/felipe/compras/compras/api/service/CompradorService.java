@@ -24,6 +24,20 @@ public class CompradorService {
         if (valor == null) throw new ValorProdutoObrigatorioException("O valor e obrigatorio");
     }
 
+    private void validaRequisicao(CompradorINDTO requisicao) {
+        if (requisicao == null) throw new CompradorINObrigatorioException("A requisicao e obrigatoria");
+    }
+
+    private void validaComprador(Comprador comprador) {
+        if (comprador == null) throw new CompradorObrigatorioException("O comprador e obrigatorio");
+    }
+
+    private void validaValorCompras(Comprador comprador, int valor) {
+        if (valor <= 0 || valor < comprador.getTotalCompras()) {
+            throw new ValorCompraInvalidoException("Valor invalido: " + valor);
+        }
+    }
+
     public List<Comprador> listaCompradores() {
         return compradorRepository.findAll();
     }
@@ -48,15 +62,15 @@ public class CompradorService {
     }
 
     public Comprador cadastra(CompradorINDTO requisicao) {
-        if (requisicao == null) throw new CompradorINObrigatorioException("A requisicao e obrigatoria");
+        validaRequisicao(requisicao);
         requisicao.validaTudo();
         var comprador = MAPPER.compradorINDTOParaComprador(requisicao);
         return compradorRepository.save(comprador);
     }
 
     public Comprador atualizaNome(Comprador comprador, CompradorINDTO requisicao) {
-        if (comprador == null) throw new CompradorObrigatorioException("O comprador e obrigatorio");
-        if (requisicao == null) throw new CompradorINObrigatorioException("A requisicao e obrigatoria");
+        validaComprador(comprador);
+        validaRequisicao(requisicao);
         requisicao.validaTudo();
         comprador.setNome(requisicao.getNome());
         return compradorRepository.save(comprador);
@@ -75,16 +89,14 @@ public class CompradorService {
     }
 
     public Comprador atualizaTotalCompras(Comprador comprador, int valor) {
-        if (comprador == null) throw new CompradorObrigatorioException("O comprador e obrigatorio");
-        if (valor <= 0 || valor < comprador.getTotalCompras()) {
-            throw new ValorCompraInvalidoException("Valor invalido: " + valor);
-        }
+        validaComprador(comprador);
+        validaValorCompras(comprador, valor);
         comprador.setTotalCompras(valor);
         return compradorRepository.save(comprador);
     }
 
     public void apaga(Comprador comprador) {
-        if (comprador == null) throw new CompradorObrigatorioException("O comprador e obrigatorio");
+        validaComprador(comprador);
         compradorRepository.delete(comprador);
     }
 }
