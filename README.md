@@ -29,6 +29,7 @@
 
 ## Funcionalidades e Notas
 
+- **Documentação com Swagger**: Disponibiliza documentação dos Endpoint's da API para Swagger. Ainda não implementado
 - **Monitoramento e visualização facilitada de logs**: Acessando http://localhost:5601, é possível acompanhar os logs da aplicação e utilizar filtros para buscar por registros específicos. Por exemplo: Filtrar logs em que o nível (level) seja igual à "ERROR" ou "WARN". ![exemplo](https://github.com/user-attachments/assets/2ece6157-1563-4894-8ba4-a5e9a25ee909) - Já implementado com configurações simples
 - **Migrações do banco com Flyway**: Inicializa o banco e cria as tabelas por db migrations. Implementado
 - **PostgreSQL como banco principal**: Deixa o H2 para os testes do repositório e PostgreSQL na aplicação principal. Implementado
@@ -49,10 +50,10 @@ Permitir que um **Comprador** registre a **Compra** de um ou mais **Produtos**, 
 
 Base URL: `/api/v1/produto`
 
-| Método | Endpoint                             | Descrição                                                                 |
-|--------|--------------------------------------|---------------------------------------------------------------------------|
+| Método | Endpoint                             | Descrição                                                                |
+|--------|--------------------------------------|--------------------------------------------------------------------------|
 | GET    | `/existe/{nome}`                     | Verifica se existe um produto com o nome informado                       |
-| GET   | `/soma_preco_produtos`               | Recebe uma lista de IDs e retorna a soma dos preços                      |
+| GET    | `/soma_preco_produtos`               | Recebe uma lista de IDs e retorna a soma dos preços                      |
 | GET    | `/lista_preco_abaixo/{preco}`        | Lista produtos com preço abaixo do valor informado                       |
 | GET    | `/lista_preco_acima/{preco}`         | Lista produtos com preço acima do valor informado                        |
 | GET    | `/lista_padrao`                      | Lista todos os produtos ordenados por ID                                 |
@@ -62,6 +63,25 @@ Base URL: `/api/v1/produto`
 | POST   | `/cadastro`                          | Cadastra um novo produto                                                 |
 | PUT    | `/alteracao/{id}`                    | Altera nome e preço de um produto pelo ID                                |
 | DELETE | `/delecao/{id}`                      | Deleta um produto pelo ID                                                |
+
+---
+
+## Endpoints Disponíveis (Comprador)
+
+Base URL: `/api/v1/comprador`
+
+| Método | Endpoint                             | Descrição                                                                |
+|--------|--------------------------------------|--------------------------------------------------------------------------|
+| POST   | `/cadastra`                          | Cadastra um novo comprador                                               |
+| GET    | `/lista`                             | Lista todos os compradores                                               |
+| GET    | `/lista_ativos`                      | Lista todos os compradores ativos                                        |
+| GET    | `/lista_negativados`                 | Lista todos os compradores negativados                                   |
+| GET    | `/{id}`                              | Busca um comprador pelo ID                                               |
+| PUT    | `/altera_nome/{id}`                  | Altera o nome cadastrado do comprador                                    |
+| PATCH  | `/altera_saldo_debito/{id}`          | Altera o saldo de débito do comprador                                    |
+| PATCH  | `/altera_saldo_va/{id}`              | Altera o saldo de vale-alimentação do comprador                          |
+| PATCH  | `/atualiza_total_compras/{id}`       | Altera o total de compras do comprador                                   |
+| DELETE | `/apaga/{id}`                        | Deleta um comprador pelo ID                                              |
 
 ---
 
