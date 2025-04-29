@@ -33,7 +33,7 @@
 - **Migrações do banco com Flyway**: Inicializa o banco e cria as tabelas por db migrations. Implementado
 - **PostgreSQL como banco principal**: Deixa o H2 para os testes do repositório e PostgreSQL na aplicação principal. Implementado
 - **Produto**: CRUD completo implementado
-- **Comprador**: Implementação parcial (controller ainda pendente)
+- **Comprador**: CRUD completo implementado
 - **Compra**: Ainda não implementado
 
 ### Objetivo Final
@@ -69,7 +69,7 @@ Base URL: `/api/v1/produto`
 
 - **Testcontainers no repositório**: Complementar os testes do repositório subindo um Testcontainer (Usar H2 talvez?). Ainda não implementado
 - **Testes do Produto [Repository, Service, Controller]**: Feito!
-- **Testes do Comprador [Repository, Service, Controller]**: Em progresso
+- **Testes do Comprador [Repository, Service, Controller]**: Feito!
 - **Testes da Compra [Repository, Service, Controller]**: Ainda não iniciado
 
 ---
