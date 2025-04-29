@@ -15,12 +15,16 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/produto")
+@RequestMapping(
+        path = "/api/v1/produto",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = {MediaType.APPLICATION_JSON_VALUE, "application/hal+json"})
 @CrossOrigin
 public class ProdutoController {
 
@@ -30,7 +34,7 @@ public class ProdutoController {
     private final ProdutoService produtoService;
     private final ProdutoLink produtoLink;
 
-    @GetMapping("/existe/{nome}")
+    @GetMapping(path = "/existe/{nome}")
     public ResponseEntity<EntityModel<HashMap<String, Boolean>>> existePorNome(@PathVariable String nome) {
         LOGGER.info("Requisicao para verificar se um produto com nome existe recebida");
         var respostaMapa = new HashMap<String, Boolean>();
@@ -43,7 +47,7 @@ public class ProdutoController {
         return ResponseEntity.ok(modelo);
     }
 
-    @GetMapping("/soma_preco_produtos")
+    @GetMapping(path = "/soma_preco_produtos")
     public ResponseEntity<EntityModel<ResultadoSomaProdutos>> somaPrecos(@RequestBody List<Object> ids) {
         LOGGER.info("Requisicao para soma total de produtos recebida");
         var resultado = this.produtoService.calculaTotalProdutos(ids);
@@ -53,31 +57,31 @@ public class ProdutoController {
         return ResponseEntity.ok(modelo);
     }
 
-    @GetMapping("/lista_preco_abaixo/{preco}")
+    @GetMapping(path = "/lista_preco_abaixo/{preco}")
     public ResponseEntity<CollectionModel<ProdutoOUTDTO>> listaProdutosPrecoAbaixo(@PathVariable Object preco) {
         LOGGER.info("Requisicao para listagem com preco abaixo recebida");
         return this.obtemLista(this.produtoService.produtoPorPreco(preco, true), "listaProdutosPrecoAbaixo");
     }
 
-    @GetMapping("/lista_preco_acima/{preco}")
+    @GetMapping(path = "/lista_preco_acima/{preco}")
     public ResponseEntity<CollectionModel<ProdutoOUTDTO>> listaProdutosPrecoAcima(@PathVariable Object preco) {
         LOGGER.info("Requisicao para listagem com preco acima recebida");
         return this.obtemLista(this.produtoService.produtoPorPreco(preco, false), "listaProdutosPrecoAcima");
     }
 
-    @GetMapping("/lista_padrao")
+    @GetMapping(path = "/lista_padrao")
     public ResponseEntity<CollectionModel<ProdutoOUTDTO>> listaProdutos() {
         LOGGER.info("Requisicao para listagem padrao recebida");
         return this.obtemLista(this.produtoService.listaTodosProdutos(), "listaProdutos");
     }
 
-    @GetMapping("/lista_ordenada")
+    @GetMapping(path = "/lista_ordenada")
     public ResponseEntity<CollectionModel<ProdutoOUTDTO>> listaOrdenada() {
         LOGGER.info("Requisicao para listagem ordenada recebida");
         return this.obtemLista(this.produtoService.listaTodosProdutosOrdenada(), "listaOrdenada");
     }
 
-    @GetMapping("{id}")
+    @GetMapping(path = "/{id}")
     public ResponseEntity<EntityModel<ProdutoOUTDTO>> produtoPorId(@PathVariable Long id) {
         LOGGER.info("Requisicao para pesquisar produto pelo ID {} recebida", id);
         LOGGER.info("Buscando um produto com o ID {}", id);
@@ -90,7 +94,7 @@ public class ProdutoController {
         return ResponseEntity.ok(modelo);
     }
 
-    @GetMapping("/nome/{nome}")
+    @GetMapping(path = "/nome/{nome}")
     public ResponseEntity<EntityModel<ProdutoOUTDTO>> produtoPorNome(@PathVariable String nome) {
         LOGGER.info("Requisicao para pesquisar produto pelo nome '{}' recebida", nome);
         LOGGER.info("Buscando um produto com o nome '{}'", nome);
@@ -103,7 +107,7 @@ public class ProdutoController {
         return ResponseEntity.ok(modelo);
     }
 
-    @PostMapping("/cadastro")
+    @PostMapping(path = "/cadastro")
     public ResponseEntity<EntityModel<ProdutoOUTDTO>> salvaProduto(@RequestBody ProdutoINDTO requisicao) {
         LOGGER.info("Requisicao para cadastrar produto recebida");
         LOGGER.info("Tentando armazenar o produto");
@@ -116,7 +120,7 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(modelo);
     }
 
-    @PutMapping("/alteracao/{id}")
+    @PutMapping(path = "/alteracao/{id}")
     public ResponseEntity<EntityModel<ProdutoOUTDTO>> alteraProduto(
             @PathVariable Long id, @RequestBody ProdutoINDTO requisicao) {
         LOGGER.info("Requisicao para alterar o produto com o id {} recebida", id);
@@ -131,7 +135,7 @@ public class ProdutoController {
         return ResponseEntity.ok(modelo);
     }
 
-    @DeleteMapping("/delecao/{id}")
+    @DeleteMapping(path = "/delecao/{id}")
     public ResponseEntity<Void> deletaProduto(@PathVariable Long id) {
         LOGGER.info("Requisicao para deletar produto com id {} recebida", id);
         LOGGER.info("Tentando obter o produto utilizando id {}", id);
