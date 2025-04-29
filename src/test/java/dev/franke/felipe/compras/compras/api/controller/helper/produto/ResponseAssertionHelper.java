@@ -85,7 +85,9 @@ public class ResponseAssertionHelper {
     }
 
     public void execAssertionsPrecoInvalidoProduto(String uri) throws Exception {
-        mockMvc.perform(get(uri)).andDo(print()).andExpect(status().isBadRequest());
+        mockMvc.perform(get(uri).contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     public void execAssertionsSomaPrecos(Matcher<?>[] matchers, String uri, String requisicaoString) throws Exception {
@@ -98,7 +100,6 @@ public class ResponseAssertionHelper {
         var matcherIdsInvalidos = matchers[3];
         var matcherIdsEncontrados = matchers[4];
         var matcherIdsNaoEncontrados = matchers[5];
-
         mockMvc.perform(get(uri).content(requisicaoString).contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -116,7 +117,7 @@ public class ResponseAssertionHelper {
         var matcherTamanhoLista = matchers[0];
         var matcherNomesCadastrados = matchers[1];
         var matcherPrecosCadastrados = matchers[2];
-        mockMvc.perform(get(uri))
+        mockMvc.perform(get(uri).contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.produtos", matcherTamanhoLista))
@@ -125,18 +126,20 @@ public class ResponseAssertionHelper {
     }
 
     public void execAssertionsListaProdutosVazia(String uri) throws Exception {
-        mockMvc.perform(get(uri)).andDo(print()).andExpect(status().isOk());
+        mockMvc.perform(get(uri).contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     public void execAssertionsNomeExiste(String uri) throws Exception {
-        mockMvc.perform(get(uri))
+        mockMvc.perform(get(uri).contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.existe", Matchers.is(true)));
     }
 
     public void execAssertionsNomeNaoExiste(String uri) throws Exception {
-        mockMvc.perform(get(uri))
+        mockMvc.perform(get(uri).contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.existe", Matchers.is(false)));
