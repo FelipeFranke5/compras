@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(
         path = "/api/v1/comprador",
-        consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = {MediaType.APPLICATION_JSON_VALUE, "application/hal+json"})
 @CrossOrigin
 @RequiredArgsConstructor
@@ -40,18 +39,18 @@ public class CompradorController {
     private final CompradorLink compradorLink;
 
     @GetMapping(path = "/lista")
-    public ResponseEntity<CollectionModel<CompradorOUTDTO>> listaCompradores() {
+    public ResponseEntity<CollectionModel<EntityModel<CompradorOUTDTO>>> listaCompradores() {
         return ListaUtil.lista(MetodoController.DEFAULT, compradorService.listaCompradores(), compradorLink);
     }
 
     @GetMapping(path = "/lista_ativos")
-    public ResponseEntity<CollectionModel<CompradorOUTDTO>> listaCompradoresAtivos() {
+    public ResponseEntity<CollectionModel<EntityModel<CompradorOUTDTO>>> listaCompradoresAtivos() {
         return ListaUtil.lista(
                 MetodoController.LISTA_COMPRADORES_ATIVOS, compradorService.listaCompradoresAtivos(), compradorLink);
     }
 
     @GetMapping(path = "/lista_negativados")
-    public ResponseEntity<CollectionModel<CompradorOUTDTO>> listaCompradoresNegativados() {
+    public ResponseEntity<CollectionModel<EntityModel<CompradorOUTDTO>>> listaCompradoresNegativados() {
         return ListaUtil.lista(
                 MetodoController.LISTA_NEGATIVADOS, compradorService.listaCompradoresNegativados(), compradorLink);
     }
