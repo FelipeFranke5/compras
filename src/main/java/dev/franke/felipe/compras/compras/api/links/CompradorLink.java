@@ -16,28 +16,36 @@ public class CompradorLink {
 
     private static final CompradorMapper MAPPER = CompradorMapper.INSTANCIA;
 
-    private CollectionModel<CompradorOUTDTO> adicionaLinks(
-            CollectionModel<CompradorOUTDTO> listaOriginal, Link[] links) {
-        var listaModificada = listaOriginal;
-        listaModificada.add(links);
-        return listaModificada;
+    private CollectionModel<EntityModel<CompradorOUTDTO>> adicionaLinks(
+            CollectionModel<EntityModel<CompradorOUTDTO>> listaOriginal, Link[] links) {
+        assert listaOriginal != null;
+        assert links != null;
+        listaOriginal.add(links);
+        return listaOriginal;
     }
 
     private EntityModel<CompradorOUTDTO> adicionaLinks(EntityModel<CompradorOUTDTO> comprador, Link[] links) {
+        assert comprador != null;
         comprador.add(links);
         return comprador;
     }
 
-    public CollectionModel<CompradorOUTDTO> preparaLista(
+    //
+
+    public CollectionModel<EntityModel<CompradorOUTDTO>> preparaLista(
             List<Comprador> compradores, MetodoController metodoController) {
-        var colecao = CollectionModel.of(
-                compradores.stream().map(MAPPER::compradorParaCompradorOUTDTO).toList());
+        assert metodoController != null;
+        assert compradores != null;
+        var colecao = CollectionModel.of(compradores.stream()
+                .map(comprador -> preparaComprador(comprador, MetodoController.POR_ID))
+                .toList());
         return adicionaLinks(colecao, CompradorLinkEstatico.linksSemId(metodoController));
     }
 
     @SuppressWarnings("null")
     public EntityModel<CompradorOUTDTO> preparaComprador(Comprador comprador, MetodoController metodoController) {
         var entidadeModelo = EntityModel.of(MAPPER.compradorParaCompradorOUTDTO(comprador));
+        assert entidadeModelo.getContent() != null;
         return adicionaLinks(
                 entidadeModelo,
                 CompradorLinkEstatico.linksComId(
