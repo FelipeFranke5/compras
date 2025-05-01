@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping(
         path = "/api/v1/produto",
-        consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = {MediaType.APPLICATION_JSON_VALUE, "application/hal+json"})
 @CrossOrigin
 public class ProdutoController {
@@ -58,25 +57,27 @@ public class ProdutoController {
     }
 
     @GetMapping(path = "/lista_preco_abaixo/{preco}")
-    public ResponseEntity<CollectionModel<ProdutoOUTDTO>> listaProdutosPrecoAbaixo(@PathVariable Object preco) {
+    public ResponseEntity<CollectionModel<EntityModel<ProdutoOUTDTO>>> listaProdutosPrecoAbaixo(
+            @PathVariable Object preco) {
         LOGGER.info("Requisicao para listagem com preco abaixo recebida");
         return this.obtemLista(this.produtoService.produtoPorPreco(preco, true), "listaProdutosPrecoAbaixo");
     }
 
     @GetMapping(path = "/lista_preco_acima/{preco}")
-    public ResponseEntity<CollectionModel<ProdutoOUTDTO>> listaProdutosPrecoAcima(@PathVariable Object preco) {
+    public ResponseEntity<CollectionModel<EntityModel<ProdutoOUTDTO>>> listaProdutosPrecoAcima(
+            @PathVariable Object preco) {
         LOGGER.info("Requisicao para listagem com preco acima recebida");
         return this.obtemLista(this.produtoService.produtoPorPreco(preco, false), "listaProdutosPrecoAcima");
     }
 
     @GetMapping(path = "/lista_padrao")
-    public ResponseEntity<CollectionModel<ProdutoOUTDTO>> listaProdutos() {
+    public ResponseEntity<CollectionModel<EntityModel<ProdutoOUTDTO>>> listaProdutos() {
         LOGGER.info("Requisicao para listagem padrao recebida");
         return this.obtemLista(this.produtoService.listaTodosProdutos(), "listaProdutos");
     }
 
     @GetMapping(path = "/lista_ordenada")
-    public ResponseEntity<CollectionModel<ProdutoOUTDTO>> listaOrdenada() {
+    public ResponseEntity<CollectionModel<EntityModel<ProdutoOUTDTO>>> listaOrdenada() {
         LOGGER.info("Requisicao para listagem ordenada recebida");
         return this.obtemLista(this.produtoService.listaTodosProdutosOrdenada(), "listaOrdenada");
     }
@@ -147,9 +148,19 @@ public class ProdutoController {
         return ResponseEntity.noContent().build();
     }
 
-    private ResponseEntity<CollectionModel<ProdutoOUTDTO>> obtemLista(List<Produto> listaProduto, String metodo) {
-        var lista = listaProduto.stream().map(MAPPER::produtoParaProdutoOUTDTO).toList();
-        var modelos = CollectionModel.of(lista).withFallbackType(ProdutoOUTDTO.class);
+    private ResponseEntity<CollectionModel<EntityModel<ProdutoOUTDTO>>> obtemLista(
+            List<Produto> listaProduto, String metodo) {
+        assert listaProduto != null;
+        assert metodo != null;
+        var lista = listaProduto.stream()
+                .map(produto -> {
+                    var produtoOUT = MAPPER.produtoParaProdutoOUTDTO(produto);
+                    var entidadeModelo = EntityModel.of(produtoOUT);
+                    entidadeModelo.add(produtoLink.linksComId("produtoPorId", produtoOUT));
+                    return entidadeModelo;
+                })
+                .toList();
+        var modelos = CollectionModel.of(lista);
         modelos.add(produtoLink.linksSemId(metodo, null));
         return ResponseEntity.ok(modelos);
     }
